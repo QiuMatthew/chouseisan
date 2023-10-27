@@ -120,6 +120,25 @@ We only need a single command to install node modules, move files etc.
     ```bash
     ./setup-frontend-project.sh
     ```
+
+If this does not work for your particular case (maybe using Windows which I did not test on), try the following steps, these are exactly what the above script will do for you. If this worked well, you may move to the next step.
+
+- Move inside the frontend directory and run the commands
+    
+    ```bash
+    cd frontend
+    npm i -g create-react-app
+    npx create-react-app react-app
+    ```
+    
+    The process might take a few minutes. Once finished, we can find a subdirectory named `react-app` is created, this is where our frontend application is located.
+    
+- Move inside the created directory and install some node modules we are using. Currently I’m using react-bootstrap and framer-motion therefore installation is required
+    
+    ```bash
+    cd react-app
+    npm i react-router-dom react-bootstrap bootstrap framer-motion
+    ```
     
 - Now your file structure should look like this
     
@@ -151,26 +170,6 @@ We only need a single command to install node modules, move files etc.
     
     ```
 
-If this does not work for your particular case (maybe using Windows which I did not test on), try the following steps, these are exactly what the above script will do for you. If this worked well, you may move to the next step.
-
-- Move inside the frontend directory and run the commands
-    
-    ```bash
-    cd frontend
-    npm i -g create-react-app
-    npx create-react-app react-app
-    ```
-    
-    The process might take a few minutes. Once finished, we can find a subdirectory named `react-app` is created, this is where our frontend application is located.
-    
-- Move inside the created directory and install some node modules we are using. Currently I’m using react-bootstrap and framer-motion therefore installation is required
-    
-    ```bash
-    cd react-app
-    npm i react-router-dom react-bootstrap bootstrap framer-motion
-    ```
-
-    
 - Replace the `frontend/react-app/src` folder with `frontent/src` cloned from our repository
 
 ## Step 4 - Start Running
