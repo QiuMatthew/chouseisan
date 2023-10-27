@@ -170,7 +170,7 @@ If this does not work for your particular case (maybe using Windows which I did 
     
     ```
 
-- Replace the `frontend/react-app/src` folder with `frontent/src` cloned from our repository
+- Replace the `frontend/react-app/src` folder with `frontent/src`
 
 ## Step 4 - Start Running
 
