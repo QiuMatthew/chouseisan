@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function ChouseisanPage() {
     const [response, setResponse] = useState();
 
+    // use effect hook to fetch data from the Go server
     useEffect(() => {
         console.log("Attempting Connection...");
         fetch("http://localhost:8080/chouseisan/schedule") // Send a GET request to the Go server
@@ -23,38 +24,68 @@ function ChouseisanPage() {
             .catch((error) => console.error("Error:", error));
     }, []);
 
-    const [fromData, setFormData] = useState({
-        timeslot1: false,
-        timeslot2: false,
-        timeslot3: false,
-        timeslot4: false,
-        timeslot5: false
+    // use state hook to store form data
+    const [formData, setFormData] = useState({
+        name: "",
+        timeSlots: new Array(5).fill(false),
     });
 
     const handleChange = (event) => {
-        const { id, checked } = event.target;
-        setFormData({ ...fromData, [id]: checked });
+        const { name, value, type, checked } = event.target;
+    
+        if (name === "name") {
+            // For the name input
+            setFormData({
+                ...formData,
+                name: value,
+            });
+        } else if (name.startsWith("timeslot")) {
+            // For time slots checkboxes
+            const timeSlotNumber = parseInt(name.replace("timeslot", ""), 10);
+            const updatedTimeSlots = [...formData.timeSlots];
+            updatedTimeSlots[timeSlotNumber - 1] = type === "checkbox" ? checked : value;
+    
+            setFormData({
+                ...formData,
+                timeSlots: updatedTimeSlots,
+            });
+        }
     };
-
+    
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(fromData);
+    
+        // Create a request object with the formData
+        const requestObject = {
+            id: Math.random().toString(36).substring(7), // Generate a random ID for the user
+            name: formData.name,
+            timeSlotsAvailability: formData.timeSlots,
+        };
+    
+        // Send the data to the backend
         fetch("http://localhost:8080/chouseisan/schedule", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(fromData)
+            body: JSON.stringify(requestObject),
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("Success:", data);
-                setResponse(data);
+                console.log("Data sent successfully:", data);
+                // Reset the form after successful submission if needed
+                setFormData({
+                    name: "",
+                    timeSlots: new Array(5).fill(false),
+                });
             })
             .catch((error) => {
-                console.error("Error:", error);
+                console.error("Error sending data:", error);
             });
-    }
+        
+        // Update the UI, there is no need to fetch the data again from the backend, but i worry about the data integrity
+        setResponse([...response, requestObject]);
+    };
 
     return (
         <>
@@ -109,16 +140,28 @@ function ChouseisanPage() {
         </Table>
 
         <Form onSubmit={handleSubmit}>
-            <Form.Control type="text" placeholder="Enter Name" onChange={handleChange} />
-            <Form.Check type="checkbox" id="timeslot1" label="Time Slot 1" onChange={handleChange} />
-            <Form.Check type="checkbox" id="timeslot2" label="Time Slot 2" onChange={handleChange} />
-            <Form.Check type="checkbox" id="timeslot3" label="Time Slot 3" onChange={handleChange} />
-            <Form.Check type="checkbox" id="timeslot4" label="Time Slot 4" onChange={handleChange} />
-            <Form.Check type="checkbox" id="timeslot5" label="Time Slot 5" onChange={handleChange} />
+            <Form.Control
+                type="text"
+                name="name"
+                placeholder="Enter Name"
+                value={formData.name}
+                onChange={handleChange}
+            />
+            {Array.from({ length: 5 }, (_, index) => (
+                <Form.Check
+                    type="checkbox"
+                    key={index}
+                    name={`timeslot${index + 1}`}
+                    label={`Time Slot ${index + 1}`}
+                    checked={formData.timeSlots[index]}
+                    onChange={handleChange}
+                />
+            ))}
             <Button variant="primary" type="submit">
                 Submit
             </Button>
         </Form>
+
         </>
     );
 }
