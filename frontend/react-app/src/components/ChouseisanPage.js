@@ -15,6 +15,20 @@ function ChouseisanPage() {
     // use effect hook to fetch data from the Go server
     useEffect(() => {
         console.log("Attempting Connection...");
+        fetch("http://localhost:8080/refreshToken",{
+            method: 'GET',
+            credentials: 'include',  // Include credentials (cookies) with the request
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          })
+            .then((response) => {return response.json()})
+            .then((data) => {
+                console.log(data)
+                //setResponse(data)
+            })
+            .catch((error) => console.error("Error:", error));
         fetch("http://localhost:8080/chouseisan/schedule") // Send a GET request to the Go server
             .then((response) => response.json())
             .then((data) => {
@@ -69,6 +83,7 @@ function ChouseisanPage() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(requestObject),
+            credentials: "include",
         })
             .then((response) => response.json())
             .then((data) => {
