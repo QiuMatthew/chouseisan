@@ -16,3 +16,29 @@ services:
     tty: true
     ports:
       - "8080:8080"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: chouseisan
+    networks:
+      - chouseisan
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    container_name: chouseisan-mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: chouseisan
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    networks:
+      - chouseisan
+    ports:
+      - "3306:3306"
+
+networks:
+    chouseisan
