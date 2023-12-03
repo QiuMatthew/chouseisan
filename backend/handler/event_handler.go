@@ -25,27 +25,6 @@ func NewEventHandler(repo *repository.Repository) *EventHandler {
 	return &EventHandler{Repo: repo}
 }
 
-// func (h *EventHandler) GetEventByTitleHandlerFunc() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		title := c.Param("title")
-
-// 		event, err := h.Repo.GetEventByTitle(title)
-// 		if err != nil {
-// 			c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
-// 			return
-// 		}
-
-// 		indentedJSON, err := json.MarshalIndent(event, "", "  ")
-// 		if err != nil {
-// 			log.Fatal("Error formatting JSON")
-// 			c.Status(http.StatusInternalServerError)
-// 			return
-// 		}
-
-// 		c.IndentedJSON(http.StatusOK, indentedJSON)
-// 	}
-// }
-
 type CreateEventRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
