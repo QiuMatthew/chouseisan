@@ -36,7 +36,15 @@ function ChouseisanPage() {
                 setResponse(data)
             })
             .catch((error) => console.error("Error:", error));
+        // fetch("http://localhost:8080/chouseisan/get-event") // Send a GET request to the Go server
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         console.log(data)
+        //         setResponse(data)
+        //     })
+        //     .catch((error) => console.error("Error:", error));
     }, []);
+    
 
     // use state hook to store form data
     const [formData, setFormData] = useState({

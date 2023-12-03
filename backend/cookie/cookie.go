@@ -22,7 +22,7 @@ func SetCookieHandler(c *gin.Context) {
 	// 	IssuedAt:  time.Now().Unix(),
 	// }
 	claims := &Claims{
-		Username: "aaa",
+		Username: "None",
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 			IssuedAt:  time.Now().Unix(),

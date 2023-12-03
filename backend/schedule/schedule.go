@@ -1,8 +1,9 @@
 package schedule
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type PersonalAvailability struct {
@@ -12,8 +13,8 @@ type PersonalAvailability struct {
 }
 
 var MembersAvailability = []PersonalAvailability{
-	{ID: "1", Name: "John", TimeSlotsAvailability: []bool{true, true, true, true, true,}},
-	{ID: "2", Name: "Mary", TimeSlotsAvailability: []bool{true, true, true, true, false,}},
+	{ID: "1", Name: "John", TimeSlotsAvailability: []bool{true, true, true, true, true}},
+	{ID: "2", Name: "Mary", TimeSlotsAvailability: []bool{true, true, true, true, false}},
 }
 
 func GetMembersAvailability(c *gin.Context) {

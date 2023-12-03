@@ -2,6 +2,8 @@ package main
 
 import (
 	"chouseisan/cookie"
+	"chouseisan/handler"
+	"chouseisan/repository"
 	"chouseisan/schedule"
 	"net/http"
 
@@ -13,6 +15,7 @@ import (
 
 func main() {
 	router := gin.Default()
+	repository.InitDB()
 	// http.HandleFunc("/", setCookies)
 	// http.HandleFunc("/cookie", showCookie)
 	// solve the CORS block problem
@@ -35,6 +38,18 @@ func main() {
 	})
 
 	schedule.SetupScheduleRoutes(router)
+	repo := repository.NewRepository(repository.DB)
+
+	event_handler := handler.NewEventHandler(repo)
+
+	router.GET("/eventBasic/:uuid", event_handler.EventBasicHandler)
+
+	router.POST("/create-event", event_handler.CreateEventHandler)
+	// event, err := repository.GetEventByTitle()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Printf("Event found: %v\n", event)
 
 	router.Run("0.0.0.0:8080")
 }
