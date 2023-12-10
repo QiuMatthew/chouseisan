@@ -6,3 +6,5 @@ type Event struct {
 	Detail    string
 	Proposals []string
 }
+
+//a
