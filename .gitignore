@@ -21,3 +21,6 @@
 go.work
 
 backend/data-access/
+
+frontend/react-app/
+frontend/chouseisan_frontend/node_modules

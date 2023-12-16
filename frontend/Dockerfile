@@ -1,2 +1,2 @@
-FROM node:20.8.0-alpine
-WORKDIR /app/frontend/react-app
+FROM node:16.14.2
+WORKDIR /app/frontend/chouseisan_frontend
