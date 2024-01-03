@@ -10,20 +10,20 @@ CREATE TABLE event (
   detail     TEXT
 );
 
-CREATE TABLE user (
-    user_id VARBINARY(16) PRIMARY KEY,
-    user_email VARCHAR(255),
-    recent_event1 VARBINARY(16),
-    recent_event2 VARBINARY(16),
-    recent_event3 VARBINARY(16),
-    recent_event4 VARBINARY(16),
-    recent_event5 VARBINARY(16),
-    FOREIGN KEY (recent_event1) REFERENCES event(event_id),
-    FOREIGN KEY (recent_event2) REFERENCES event(event_id),
-    FOREIGN KEY (recent_event3) REFERENCES event(event_id),
-    FOREIGN KEY (recent_event4) REFERENCES event(event_id),
-    FOREIGN KEY (recent_event5) REFERENCES event(event_id)
-);
+-- CREATE TABLE user (
+--     user_id VARBINARY(16) PRIMARY KEY,
+--     user_email VARCHAR(255),
+--     recent_event1 VARBINARY(16),
+--     recent_event2 VARBINARY(16),
+--     recent_event3 VARBINARY(16),
+--     recent_event4 VARBINARY(16),
+--     recent_event5 VARBINARY(16),
+--     FOREIGN KEY (recent_event1) REFERENCES event(event_id),
+--     FOREIGN KEY (recent_event2) REFERENCES event(event_id),
+--     FOREIGN KEY (recent_event3) REFERENCES event(event_id),
+--     FOREIGN KEY (recent_event4) REFERENCES event(event_id),
+--     FOREIGN KEY (recent_event5) REFERENCES event(event_id)
+-- );
 
 CREATE TABLE event_user (
   id INT PRIMARY KEY AUTO_INCREMENT,
