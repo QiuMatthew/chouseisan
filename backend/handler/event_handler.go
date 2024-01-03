@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
+	"fmt"
 	"chouseisan/repository"
 
 	"github.com/gin-gonic/gin"
@@ -33,6 +33,7 @@ type CreateEventRequest struct {
 
 func (h *EventHandler) CreateEventHandler(c *gin.Context) {
 	// Parse the JSON request
+	fmt.Println("here")
 	var createEventRequest CreateEventRequest
 	if err := c.ShouldBindJSON(&createEventRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})

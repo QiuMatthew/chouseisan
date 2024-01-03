@@ -44,7 +44,7 @@ func main() {
 
 	router.GET("/eventBasic/:uuid", event_handler.EventBasicHandler)
 
-	router.POST("/create-event", event_handler.CreateEventHandler)
+	router.POST("/createEvent", event_handler.CreateEventHandler)
 	// event, err := repository.GetEventByTitle()
 	// if err != nil {
 	// 	log.Fatal(err)
