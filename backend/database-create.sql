@@ -7,7 +7,8 @@ USE chouseisan;
 CREATE TABLE event (
   event_id   VARBINARY(16) PRIMARY KEY,
   title      VARCHAR(128) NOT NULL,
-  detail     TEXT
+  detail     TEXT,
+  creatorToken  VARBINARY(16) NOT NULL
 );
 
 -- CREATE TABLE user (
