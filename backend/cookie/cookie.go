@@ -50,6 +50,7 @@ func SetCookieHandler(c *gin.Context) {
 func RefreshCookieHandler(c *gin.Context) {
 	// Check if a valid JWT cookie exists
 	tokenString, err := c.Cookie("jwt")
+
 	if err == nil {
 		// Parse the existing token to verify its validity
 		token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {

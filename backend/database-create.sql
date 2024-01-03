@@ -34,8 +34,9 @@ CREATE TABLE event_user (
 ) ENGINE MEMORY;
 
 CREATE TABLE event_timeslot (
+  id INT PRIMARY KEY AUTO_INCREMENT,
   event_id VARBINARY(16),
-  timeslot_id INT PRIMARY KEY,
+  timeslot_id INT,
   description VARCHAR(255),
   FOREIGN KEY (event_id) REFERENCES event(event_id)
 ) ENGINE MEMORY;
