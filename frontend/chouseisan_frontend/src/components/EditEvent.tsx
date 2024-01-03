@@ -1,4 +1,12 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Routes,
   Route,
@@ -65,16 +73,23 @@ import DateProposalGrid from "./DateProposalGrid";
 // type CustomLocation = {
 //   state: { from: { pathname: string } };
 // };
-
+interface rowData {
+  id: number;
+  column1: string;
+  column2: string;
+}
 export default function EditEvent() {
+  const [rows, setRows] = useState<rowData[]>([]);
+  const [columns, setColumns] = useState<GridColDef[]>([]);
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [no, setNo] = useState(0);
   const japanTime = dayjs();
   const [dateList, setDateList] = useState("");
+  const [selectionModel, setSelectionModel] = useState<number[]>([1]);
   const navigate = useNavigate();
-
+  const inputRef = useRef("");
   const eventSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
@@ -91,30 +106,83 @@ export default function EditEvent() {
       });
   };
 
-  const columns = [
-    {
-      field: "column1",
-      headerName: "",
-      height: 0.1,
-      width: 300,
-      sortable: false,
-      cellClassName: "grayGray",
-    },
-    {
-      field: "column2",
-      headerName: "",
-      height: 0.1,
-      width: 1500,
-      sortable: false,
-      renderCell: (params: GridRenderCellParams) => renderColumn2(params),
-    },
-  ];
+  // let columns = [
+  //   {
+  //     field: "column1",
+  //     headerName: "",
+  //     height: 0.1,
+  //     width: 300,
+  //     sortable: false,
+  //     cellClassName: "grayGray",
+  //   },
+  //   {
+  //     field: "column2",
+  //     headerName: "",
+  //     height: 0.1,
+  //     width: 1500,
+  //     sortable: false,
 
-  const rows = [
-    { id: 1, column1: "Event Name", column2: "" },
-    { id: 2, column1: "Event Detail", column2: "" },
-    { id: 3, column1: "Proposal Date", column2: "" },
-  ];
+  //     renderCell: (params: GridRenderCellParams) => renderColumn2(params),
+  //   },
+  // ];
+  useEffect(()=>{
+    axios.get(``)
+  })
+  const generateColumns = () => {
+    let columns = [
+      {
+        field: "column1",
+        headerName: "",
+        height: 0.1,
+        width: 300,
+        sortable: false,
+        cellClassName: "grayGray",
+      },
+      {
+        field: "column2",
+        headerName: "",
+        height: 0.1,
+        width: 1500,
+        sortable: false,
+
+        renderCell: (params: GridRenderCellParams) => {
+          const rowId = params.id;
+          if (params.id === 2) {
+            return (
+              <textarea
+                // value={detail}
+                onChange={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDetail(e.target.value);
+                }}
+              ></textarea>
+            );
+          }
+        },
+      },
+    ];
+    return columns;
+  };
+
+  const generateRows = () => {
+    let rows = [
+      { id: 1, column1: "Event Name", column2: "" },
+      { id: 2, column1: "Event Detail", column2: "" },
+      { id: 3, column1: "Proposal Date", column2: "" },
+    ];
+    return rows;
+  };
+  useEffect(() => {
+    setColumns(generateColumns());
+    setRows(generateRows());
+  }, []);
+
+  // const rows = [
+  //   { id: 1, column1: "Event Name", column2: "" },
+  //   { id: 2, column1: "Event Detail", column2: "" },
+  //   { id: 3, column1: "Proposal Date", column2: "" },
+  // ];
 
   function App() {
     return (
@@ -126,6 +194,7 @@ export default function EditEvent() {
             disableColumnMenu
             disableColumnSelector
             className="no-header"
+            // rowSelectionModel={3}
             getRowHeight={() => "auto"}
           />
         </div>
@@ -136,33 +205,57 @@ export default function EditEvent() {
   function renderColumn2(params: GridRenderCellParams) {
     // rowIdに基づいて適切な関数を選択して表示
     const rowId = params.id;
-    switch (rowId) {
-      case 1:
-        return aaa();
-      case 2:
-        return iii();
-      case 3:
-        return uuu();
-      default:
-        return null;
+    if (params.id === 2) {
+      return (
+        <textarea
+          value={detail}
+          onChange={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDetail(e.target.value);
+          }}
+        ></textarea>
+      );
     }
+
+    // switch (rowId) {
+    //   case 1:
+    //     return Aaa();
+    //   case 2:
+
+    //   return Iii();
+    //   // return useMemo(() => iii(), []);
+    //   case 3:
+    //     return Uuu();
+    //   default:
+    //     return null;
+    // }
   }
 
-  function iii() {
+  function Iii() {
+    console.log("rendered again");
     return (
-      <div style={{ height: "auto", fontFamily: "Arial" }}>
+      <div
+        style={{ height: "auto", fontFamily: "Arial" }}
+        onFocus={(e) => e.stopPropagation()}
+        onChange={(e) => e.preventDefault()}
+      >
         <textarea
           defaultValue={detail}
+          value={detail}
           style={{ margin: "10px", fontFamily: "Arial" }}
+          onChange={(event) => {
+            setDetail(event.target.value);
+          }}
         />
       </div>
     );
   }
 
-  function uuu() {
+  function Uuu() {
     return (
       <>
-        <div className="box2">
+        <div className="box2" onFocus={(e) => e.stopPropagation()}>
           <div className="event-box">
             <p className="item-title">
               <span className="step-label">STEP2</span>Date/Time Proposals
@@ -175,7 +268,7 @@ export default function EditEvent() {
               Example:<br></br>　Aug 7(Mon) 20:00～<br></br>　Aug 8(Tue) 20:00～
               <br></br>　Aug 9(Wed) 21:00～
             </p>
-
+            <textarea></textarea>
             <TextField
               size="small"
               multiline
@@ -184,9 +277,14 @@ export default function EditEvent() {
               label="Proposal"
               inputProps={{ style: { padding: 0 } }}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setDateList(event.target.value);
+                event.preventDefault();
+                event.stopPropagation();
+                setDateList(() => event.target.value);
               }}
-              value={dateList}
+              // onKeyDown={(e) => {
+              //   e.stopPropagation();
+              // }}
+              value={useMemo(() => dateList, [dateList])}
               placeholder="Simply input your proposals in the Month DD(DAY) TIME format. Or you can click on the specific date(s) in the calendar."
             ></TextField>
           </div>
@@ -221,9 +319,9 @@ export default function EditEvent() {
     );
   }
 
-  function aaa() {
+  function Aaa() {
     return (
-      <div>
+      <div onFocus={(e) => e.stopPropagation()}>
         <input
           type="text"
           defaultValue={title}
