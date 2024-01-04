@@ -1,5 +1,5 @@
-import React, { useState, ChangeEvent } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, ChangeEvent, useEffect } from "react";
+import { Link, Location, useLocation, useParams } from "react-router-dom";
 import {
   Stack,
   TextField,
@@ -23,8 +23,20 @@ import {
   Box,
 } from "@mui/material";
 import "./CreateComplete.css";
+import axios from "../utils/axios";
+interface NextPageParams {
+  uuid: string;
+}
 export default function CreateComplete() {
-  const [url, setUrl] = useState("http://localhost:3000/scheduler/create_complete?h=d4fd82c927564792a4cf2a855464f944");
+  const location = useLocation();
+  const params = useParams();
+  const textUrl =
+    "http://localhost:3000/scheduler/create_complete/" + params.eventId;
+  const [url, setUrl] = useState<string | undefined>(textUrl);
+  console.log(params.eventId);
+  useEffect(()=>{
+    axios.get(`/`)
+  })
   return (
     <>
       <div className="container">

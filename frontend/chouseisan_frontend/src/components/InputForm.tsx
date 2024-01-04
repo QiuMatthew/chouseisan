@@ -58,6 +58,7 @@ export default function InputForm() {
   const [dateList, setDateList] = React.useState("");
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
+  const [uuid, setUuid] = useState("");
   const navigate = useNavigate();
   const utc = require("dayjs/plugin/utc");
   const timezone = require("dayjs/plugin/timezone");
@@ -66,7 +67,7 @@ export default function InputForm() {
   const eventSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
-    // "http://localhost:8080/"
+      // "http://localhost:8080/"
       .post(
         `http://localhost:8080/createEvent`,
         {
@@ -74,13 +75,14 @@ export default function InputForm() {
           detail: detail,
           dateList: dateList,
         },
+
         {
           headers: { "Content-Type": "application/json" },
         }
       )
       .then(function (response) {
-        console.log(response.data);
-        navigate(`/create_complete?h=${response.data.uuid}`);
+        let uuid = response.data.event_id.replace(/-/g, "");
+        navigate(`/create_complete/${uuid}`);
       })
       .catch(function (response) {
         console.log("ERROR connecting backend service");
