@@ -80,7 +80,7 @@ export default function InputForm() {
       )
       .then(function (response) {
         console.log(response.data);
-        navigate(`/create_complete?h=${response.data.uuid}`);
+        navigate(`/create_complete?h=${response.data.event_id}`);
       })
       .catch(function (response) {
         console.log("ERROR connecting backend service");
