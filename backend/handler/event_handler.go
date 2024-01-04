@@ -2,11 +2,11 @@
 package handler
 
 import (
+	"chouseisan/repository"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
-	"fmt"
-	"chouseisan/repository"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,6 +49,8 @@ func (h *EventHandler) CreateEventHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create event"})
 		return
 	}
+	fmt.Println("there")
+	fmt.Println(eventID)
 
 	// Return the event ID as a response
 	c.JSON(http.StatusCreated, gin.H{"event_id": eventID})

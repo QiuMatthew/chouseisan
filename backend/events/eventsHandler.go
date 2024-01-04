@@ -5,8 +5,11 @@ import (
 )
 
 func SetupEventsRoutes(router *gin.Engine) {
-	router.GET("/chouseisan/events", GetEventByHash)
-	router.POST("chouseisan/events", CreateEvent)
-	router.GET("/create", GetEvents)
-	router.POST("/create", CreateEvent)
+	/*
+		router.GET("/chouseisan/events", GetEventByHash)
+		router.POST("chouseisan/events", CreateEvent)
+	*/
+	router.GET("/event", GetEvents)
+	router.POST("/event", CreateEvent)
+	router.DELETE("/event", DeleteEvent)
 }

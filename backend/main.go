@@ -2,6 +2,7 @@ package main
 
 import (
 	"chouseisan/cookie"
+	"chouseisan/events"
 	"chouseisan/handler"
 	"chouseisan/repository"
 	"chouseisan/schedule"
@@ -50,6 +51,6 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Printf("Event found: %v\n", event)
-
+	events.SetupEventsRoutes(router)
 	router.Run("0.0.0.0:8080")
 }

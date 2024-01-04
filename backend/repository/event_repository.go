@@ -54,10 +54,13 @@ func (repo Repository) CreateEvent(title, detail string, proposals []string) (st
 		return "", err
 	}
 
-	newUUID := uuid.New()
+	newUUID := uuid.New().String()
+	hostToken := uuid.New().String()
+
+	fmt.Println(newUUID)
 
 	// Insert event information into the events table
-	_, err = tx.Exec("INSERT INTO event (event_id, title, detail) VALUES (?,?,?);", newUUID[:], title, detail)
+	_, err = tx.Exec("INSERT INTO events (event_id, title, detail, host_token) VALUES (?,?,?,?);", newUUID, title, detail, hostToken)
 	if err != nil {
 		// Rollback the transaction in case of an error
 		tx.Rollback()
@@ -66,15 +69,16 @@ func (repo Repository) CreateEvent(title, detail string, proposals []string) (st
 	}
 
 	// Insert timeslot information into the event-timeslot table
-	stmt, err := tx.Prepare("INSERT INTO event_timeslot (event_id, timeslot_id, description) VALUES (?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO event_timeslots (event_id, description) VALUES (?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
 
 	// Insert each proposal into event_timeslot
-	for i, proposal := range proposals {
-		_, err := stmt.Exec(newUUID[:], i+1, proposal)
+	for proposal := range proposals {
+		_, err := stmt.Exec(newUUID, proposal)
+		fmt.Println(proposal)
 		if err != nil {
 			// Rollback the transaction in case of an error
 			tx.Rollback()
@@ -88,5 +92,5 @@ func (repo Repository) CreateEvent(title, detail string, proposals []string) (st
 		return "", err
 	}
 
-	return newUUID.String(), nil
+	return newUUID, nil
 }
