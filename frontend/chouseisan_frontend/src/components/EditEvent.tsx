@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import {
   Routes,
   Route,
@@ -37,7 +29,19 @@ import {
   Tooltip,
   Box,
   Link,
+  Tab,
+  Divider,
+  Theme,
+  createStyles,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  ButtonGroup,
+  Typography,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import dayjs from "dayjs";
 import {
   useForm,
@@ -52,7 +56,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import HelpIcon from "@mui/icons-material/Help";
 import "./InputForm.css";
 import "./EditEvent.css";
-
+import { makeStyles } from "@mui/material";
 import topIcon from "../images/top.png";
 import FlagIcon from "@mui/icons-material/Flag";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -73,303 +77,46 @@ import DateProposalGrid from "./DateProposalGrid";
 // type CustomLocation = {
 //   state: { from: { pathname: string } };
 // };
-interface rowData {
-  id: number;
-  column1: string;
-  column2: string;
-}
+// const useStyles = makeStyles((theme:Theme) =>
+//   createStyles({
+//     tableCell: {
+//       borderRight: "1px solid #ddd", // 设置竖线样式
+//       padding: "8px", // 调整单元格的内边距
+//       weight: 210,
+//       fontSize: 18,
+//       fontWeight: 800,
+//     }
+//   })
+// );
 export default function EditEvent() {
-  const [rows, setRows] = useState<rowData[]>([]);
-  const [columns, setColumns] = useState<GridColDef[]>([]);
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [no, setNo] = useState(0);
+  const [clicked, setClicked] = useState(false);
   const japanTime = dayjs();
-  const [dateList, setDateList] = useState("");
-  const [selectionModel, setSelectionModel] = useState<number[]>([1]);
+  const [dateList, setDateList] = useState([
+    "123456",
+    "789012",
+    "sdfoiuhiodfsh",
+  ]);
+  const [newList, setNewList] = useState("");
   const navigate = useNavigate();
-  const inputRef = useRef("");
-  const eventSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    axios
-      .post(`/edit`, {
-        title: title,
-        detail: detail,
-        dateList: dateList,
-      })
-      .then(function (response) {
-        navigate("/create_complete");
-      })
-      .catch(function (response) {
-        console.log("ERROR connecting backend service");
-      });
+  const [addDate, setAddDate] = useState("");
+  let addDate2 = "";
+  const utc = require("dayjs/plugin/utc");
+  const leftCellStyle = {
+    fontSize: "16px",
+    fontWeight: "bold",
+    borderRight: "1px solid #ddd",
+    width: "210px",
+    padding: "18px",
   };
-
-  // let columns = [
-  //   {
-  //     field: "column1",
-  //     headerName: "",
-  //     height: 0.1,
-  //     width: 300,
-  //     sortable: false,
-  //     cellClassName: "grayGray",
-  //   },
-  //   {
-  //     field: "column2",
-  //     headerName: "",
-  //     height: 0.1,
-  //     width: 1500,
-  //     sortable: false,
-
-  //     renderCell: (params: GridRenderCellParams) => renderColumn2(params),
-  //   },
-  // ];
-  useEffect(()=>{
-    axios.get(``)
-  })
-  const generateColumns = () => {
-    let columns = [
-      {
-        field: "column1",
-        headerName: "",
-        height: 0.1,
-        width: 300,
-        sortable: false,
-        cellClassName: "grayGray",
-      },
-      {
-        field: "column2",
-        headerName: "",
-        height: 0.1,
-        width: 1500,
-        sortable: false,
-
-        renderCell: (params: GridRenderCellParams) => {
-          const rowId = params.id;
-          if (params.id === 2) {
-            return (
-              <textarea
-                // value={detail}
-                onChange={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setDetail(e.target.value);
-                }}
-              ></textarea>
-            );
-          }
-        },
-      },
-    ];
-    return columns;
+  const rightCellStyle = {
+    padding: "10px",
   };
-
-  const generateRows = () => {
-    let rows = [
-      { id: 1, column1: "Event Name", column2: "" },
-      { id: 2, column1: "Event Detail", column2: "" },
-      { id: 3, column1: "Proposal Date", column2: "" },
-    ];
-    return rows;
-  };
-  useEffect(() => {
-    setColumns(generateColumns());
-    setRows(generateRows());
-  }, []);
-
-  // const rows = [
-  //   { id: 1, column1: "Event Name", column2: "" },
-  //   { id: 2, column1: "Event Detail", column2: "" },
-  //   { id: 3, column1: "Proposal Date", column2: "" },
-  // ];
-
-  function App() {
-    return (
-      <form className="container" onSubmit={eventSubmit}>
-        <div style={{ height: 900, width: "100%", margin: "10px" }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            disableColumnMenu
-            disableColumnSelector
-            className="no-header"
-            // rowSelectionModel={3}
-            getRowHeight={() => "auto"}
-          />
-        </div>
-      </form>
-    );
-  }
-
-  function renderColumn2(params: GridRenderCellParams) {
-    // rowIdに基づいて適切な関数を選択して表示
-    const rowId = params.id;
-    if (params.id === 2) {
-      return (
-        <textarea
-          value={detail}
-          onChange={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setDetail(e.target.value);
-          }}
-        ></textarea>
-      );
-    }
-
-    // switch (rowId) {
-    //   case 1:
-    //     return Aaa();
-    //   case 2:
-
-    //   return Iii();
-    //   // return useMemo(() => iii(), []);
-    //   case 3:
-    //     return Uuu();
-    //   default:
-    //     return null;
-    // }
-  }
-
-  function Iii() {
-    console.log("rendered again");
-    return (
-      <div
-        style={{ height: "auto", fontFamily: "Arial" }}
-        onFocus={(e) => e.stopPropagation()}
-        onChange={(e) => e.preventDefault()}
-      >
-        <textarea
-          defaultValue={detail}
-          value={detail}
-          style={{ margin: "10px", fontFamily: "Arial" }}
-          onChange={(event) => {
-            setDetail(event.target.value);
-          }}
-        />
-      </div>
-    );
-  }
-
-  function Uuu() {
-    return (
-      <>
-        <div className="box2" onFocus={(e) => e.stopPropagation()}>
-          <div className="event-box">
-            <p className="item-title">
-              <span className="step-label">STEP2</span>Date/Time Proposals
-            </p>
-            <p className="item-description">
-              List the dates and corresponding times propose to host an event.
-              <br></br>*Input one proposal per line.
-            </p>
-            <p className="item-description">
-              Example:<br></br>　Aug 7(Mon) 20:00～<br></br>　Aug 8(Tue) 20:00～
-              <br></br>　Aug 9(Wed) 21:00～
-            </p>
-            <textarea></textarea>
-            <TextField
-              size="small"
-              multiline
-              fullWidth
-              rows={7}
-              label="Proposal"
-              inputProps={{ style: { padding: 0 } }}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setDateList(() => event.target.value);
-              }}
-              // onKeyDown={(e) => {
-              //   e.stopPropagation();
-              // }}
-              value={useMemo(() => dateList, [dateList])}
-              placeholder="Simply input your proposals in the Month DD(DAY) TIME format. Or you can click on the specific date(s) in the calendar."
-            ></TextField>
-          </div>
-        </div>
-        <div className="box3">
-          <p className="item-description">
-            ↓Click on the specific date(s) you want to propose.
-          </p>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              defaultValue={dayjs(japanTime)}
-              sx={{ overflow: "visible" }}
-              disablePast
-              onChange={(date) => {
-                //set to asia/tokyo timezone
-                const origin = date!.add(9, "hour").toString();
-                let res = `${origin.slice(8, 11)} ${origin.slice(
-                  5,
-                  7
-                )}(${origin.slice(0, 3)}) ${origin.slice(17, 22)}～`;
-                setDateList((dateList) => {
-                  if (dateList) dateList += `\n`;
-                  dateList += `${res}`;
-                  console.log(dateList);
-                  return dateList;
-                });
-              }}
-            />
-          </LocalizationProvider>
-        </div>
-      </>
-    );
-  }
-
-  function Aaa() {
-    return (
-      <div onFocus={(e) => e.stopPropagation()}>
-        <input
-          type="text"
-          defaultValue={title}
-          style={{ margin: "10px", fontFamily: "Arial" }}
-        />
-      </div>
-    );
-  }
-
-  // // a_listが与えられたと仮定
-  // const a_list = ["2023-12-20", "2023-12-25", "2023-12-31"];
-
-  // // a_listをdateListに結合するコード
-  // setDateList((dateList) => {
-  //   // 先ほどのコードで生成された日付情報
-  //   const newDateList = dateList || ""; // もしDateListがnullやundefinedなら空文字列として扱う
-
-  //   // a_listから新しい日付情報を生成
-  //   const newDateListFromAList = a_list
-  //     .map((date) => {
-  //       const japanTime = dayjs(date).add(9, "hour").toString();
-  //       return `${japanTime.slice(8, 11)} ${japanTime.slice(5, 7)}(${japanTime.slice(0, 3)}) ${japanTime.slice(17, 22)}～`;
-  //     })
-  //     .join("\n");
-
-  //   // 既存の日付情報と新しい日付情報を結合
-  //   const combinedDateList = `${newDateList}\n${newDateListFromAList}`;
-  //   dateList = combinedDateList;
-
-  //   console.log(combinedDateList); // コンソールに結合された日付情報を表示（必要に応じて）
-
-  //   return dateList;
-  // });
-
-  React.useEffect(() => {
-    axios
-      .get("/isCreatedBySelf")
-      .then((response) => {
-        setTitle(response.data.title);
-        setDetail(response.data.detail);
-        //setDateList(Array(response.data.proposals.length).fill(undefined));//response.data.scheduleLIstというスケジュールリストを使って，リストを生成する関数？？
-      })
-      .catch((reason) => {
-        console.log(reason);
-        console.log("ERROR connecting backend service");
-      });
-  }, []);
-
+  
+  // const classes = useStyles();
   return (
     <>
       <p className="firstLink">
@@ -379,40 +126,206 @@ export default function EditEvent() {
           underline="hover"
           sx={{ marginBottom: "15px" }}
         >
-          {name}
+          {title}
         </Link>
         {" > "}Edit/Delete Event
       </p>
       <div className="container1">
-        <div className="event-header">Edit/Delete Event</div>
+        <div className="event-header1">Edit/Delete Event</div>
 
-        <p style={{ backgroundColor: "#eaf4e5" }}>
-          <App />
-        </p>
+        {/* <p style={{}}></p> */}
+        <TableContainer
+          component={Paper}
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            border: "1px solid #ccc",
+          }}
+        >
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableBody>
+              <TableRow>
+                <TableCell style={leftCellStyle}>Event Title</TableCell>
+                <TableCell style={rightCellStyle}>
+                  <TextField
+                    fullWidth
+                    helperText="Team Dinner Party”, “Project Meeting”, etc..."
+                  ></TextField>
+                </TableCell>
+              </TableRow>
 
-        <p className="event-info">
-          <span className="no-label">No. of respondents</span>
-          {no}
-          <span style={{ marginLeft: "30px", fontSize: 14 }}>
-            You are the event organizer
-          </span>
-        </p>
-        <div style={{ minHeight: "150px" }}>
-          {detail !== "" && (
-            <>
-              <p className="event-detail">Event Details</p>
-              <p>{detail}</p>
-            </>
-          )}
-        </div>
+              <TableRow>
+                <TableCell style={leftCellStyle}>Event Details</TableCell>
+                <TableCell style={rightCellStyle}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    helperText="*Let’s schedule the party! Please respond by ___"
+                  ></TextField>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell style={leftCellStyle}>Date Proposals</TableCell>
+                <TableCell style={rightCellStyle}>
+                  <h2>Delete proposed dates</h2>
+                  <List>
+                    {dateList.map((value, index) => (
+                      <ListItem
+                        key={index}
+                        sx={{
+                          maxWidth: 500,
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                          margin: "8px 0",
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <ListItemSecondaryAction>
+                          <IconButton
+                            onClick={() => {
+                              const updatedList = [...dateList];
+                              updatedList.splice(index, 1);
+                              setDateList(updatedList);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                        <ListItemText primary={value} />
+                      </ListItem>
+                    ))}
+                  </List>
+                  <h2>Add proposed dates</h2>
+                  <p>Please enter the new proposed dates.</p>
+                  <div className="form">
+                    <TextField
+                      fullWidth
+                      helperText=""
+                      multiline
+                      rows={15}
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>
+                      ) => {
+                        setNewList(event.target.value);
+                      }}
+                      value={newList}
+                      placeholder="Simply input your proposals in the Month DD(DAY) TIME format. Or you can click on the specific date(s) in the calendar."
+                    ></TextField>
+
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateCalendar
+                        defaultValue={dayjs(japanTime)}
+                        sx={{ overflow: "visible" }}
+                        disablePast
+                        onChange={(date) => {
+                          //set to asia/tokyo timezone
+                          const origin = date!.add(9, "hour").toString();
+                          let res = `${origin.slice(8, 11)} ${origin.slice(
+                            5,
+                            7
+                          )}(${origin.slice(0, 3)}) ${origin.slice(17, 22)}～`;
+                          setNewList((newList) => {
+                            if (newList) newList += `\n`;
+                            newList += `${res}`;
+                            return newList;
+                          });
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <ButtonGroup
+          sx={{
+            position: "absolute",
+            transform: "translate(-50%, -50%)",
+            marginTop: 5,
+            marginBottom: 10,
+            left: "50%",
+            height: 50,
+          }}
+        >
+          <Button
+            sx={{
+              marginRight: "58px",
+              borderRadius: 0,
+              width: 150,
+            }}
+            variant="contained"
+          >
+            Go Back
+          </Button>
+          <Button sx={{ borderRadius: 0, width: 300 }} variant="contained">
+            Save Changes
+          </Button>
+        </ButtonGroup>
+        <div className="event-header2">Edit/Delete Event</div>
+        <TableContainer
+          component={Paper}
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            border: "1px solid #ccc",
+            marginBottom: 20,
+          }}
+        >
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  style={{
+                    ...leftCellStyle,
+                    backgroundColor: "red",
+                    color: "white",
+                  }}
+                >
+                  Cancel your event
+                </TableCell>
+                <TableCell
+                  style={{
+                    ...rightCellStyle,
+                    flexDirection: "column",
+                    display: "flex",
+                  }}
+                >
+                  {clicked && (
+                    <p className="warning">
+                      Are you sure you want to delete this event?<br></br>Once
+                      you delete an event, it cannot be recovered.<br></br>If
+                      you are sure, please press the "Delete Event" button.
+                    </p>
+                  )}
+                  <Button
+                    sx={{
+                      width: 400,
+                      marginTop: 1,
+                      marginBottom: 3,
+                      border: clicked ? "1px solid red" : "1px solid", // 根据点击状态设置边框颜色
+                      "&:hover": {
+                        border: clicked ? "1px solid red" : "1px solid", // 根据点击状态设置悬停时的边框颜色
+                      },
+                    }}
+                    onClick={() => {
+                      setClicked(true);
+                      if (clicked) {
+                      }
+                    }}
+                  >
+                    Delete event
+                  </Button>
+                  <Typography variant="caption">
+                    *Event pages cannot be restored once deleted.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
-      {/* <Box sx={{ background: "#f9f9f9" }}>
-        <div className="container2">
-          <p className="event-detail">Date Proposals</p>
-          <p>Click on the name to edit your response.</p>
-          <DateProposalGrid />
-        </div>
-      </Box> */}
     </>
   );
 }

@@ -1,4 +1,4 @@
-.firstLink{
+.firstLink {
   font-size: 15px;
   width: 970px;
   margin: 0 auto;
@@ -7,9 +7,8 @@
   margin-top: 30px;
 }
 
-
-.firstLink a{
-  color:rgb(72, 72, 173);
+.firstLink a {
+  color: rgb(72, 72, 173);
 }
 
 .container1,
@@ -21,16 +20,19 @@
 }
 .container1 {
   margin-bottom: 30px;
-  margin-top: 30px;
 }
 
-.event-header {
+.event-header1,
+.event-header2 {
   color: #666;
   font-size: 22px;
   border-bottom: 1px solid #999;
-  margin-top: 20px;
+
   margin-bottom: 20px;
   padding-bottom: 12px;
+}
+.event-header2 {
+  margin-top: 100px;
 }
 .event-info {
   font-size: 16px;
@@ -62,20 +64,19 @@
 }
 .no-header .MuiDataGrid-colCell,
 .no-header .MuiDataGrid-colHeaderWrapper {
-  display:none
+  display: none;
 }
 
 .grayGray {
   background-color: rgb(223, 220, 220);
 }
 
-
-
-/*ここから！*/
+/*銇撱亾銇嬨倝锛�*/
 .container {
   width: 970px;
   margin: 0 auto;
   position: relative;
+  padding: 10px;
   /* justify-content: ; */
 }
 .form-header {
@@ -129,4 +130,42 @@
 }
 .box2 {
   width: 300px;
+}
+
+.addadd {
+  display: flex;
+  justify-content: space-between;
+  height: auto;
+}
+
+.proposal_list {
+  align-items: center;
+  height: 350px;
+  width: 250px;
+  margin: 20px;
+}
+
+.rowTitle {
+  padding: 8px;
+  border-right: 1px solid #ddd;
+  width: 210px;
+  font-size: 160px;
+}
+.form {
+  display: flex;
+  justify-content: space-between;
+}
+.twoButton {
+  /* left: "50%";
+  display: "flex";
+  position: absolute;
+  transform: "translate(-50%, -50%)"; */
+  margin-top: 20px;
+}
+.warning {
+  font-size: 15px;
+  line-height: 21px;
+  margin-bottom: 20px;
+  color: red;
+  line-height: 28px;
 }
