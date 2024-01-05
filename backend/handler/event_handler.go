@@ -164,7 +164,7 @@ func (h *EventHandler) GetTimeslotsHandler(c *gin.Context) {
 	timeslots, err := h.Repo.GetTimeslotsByEventID(eventID)
 	if err != nil {
 		log.Println(err)
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Error obtaining timeslots for this event."})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error obtaining timeslots for this event."})
 		return
 	}
 
@@ -219,7 +219,7 @@ func (h *EventHandler) DeleteTimeslotsHandler(c *gin.Context) {
 	// delete specified events
 	if err := h.Repo.DeleteEventTimeslots(eventID, req.TimeslotIDs); err != nil {
 		log.Println(err)
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Error deleting events."})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error deleting events."})
 		return
 	}
 
@@ -280,6 +280,8 @@ func (h *EventHandler) IsCreatedBySelfHandler(c *gin.Context) {
 		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "permission denied, you are not the host of the event"})
 		return
 	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "you ARE the host of the event"})
 }
 
 func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
@@ -304,7 +306,8 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 		if err != nil {
 			// Handle the error if the conversion fails
 			fmt.Printf("Error converting key %s: %v\n", strKey, err)
-			continue
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error converting availability"})
+			return
 		}
 		uintAvailability[uint(uintKey)] = value
 	}
@@ -314,7 +317,7 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error storing preferences"})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully stored preferences"})
+	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Successfully stored preferences"})
 }
 
 func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
@@ -352,7 +355,7 @@ func (h *EventHandler) GetEventBasicHandler(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error obtaining event"})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"event": event})
+	c.IndentedJSON(http.StatusOK, gin.H{"title": event.Title, "detail": event.Detail})
 
 }
 

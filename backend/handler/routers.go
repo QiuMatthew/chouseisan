@@ -9,7 +9,7 @@ func SetupEventRoutes(router *gin.Engine, event_handler *EventHandler) {
 	*/
 	router.POST("/event", event_handler.CreateEventHandler)
 	router.DELETE("/event/:eventID", event_handler.DeleteEventHandler)
-	router.GET("/event/:eventID", event_handler.GetEventBasicHandler)
+	router.GET("/event/basic/:eventID", event_handler.GetEventBasicHandler)
 	router.PUT("/event/editTitleDetail/:eventID", event_handler.EditTitleDetailHandler)
 	router.GET("/event/timeslots/:eventID", event_handler.GetTimeslotsHandler)
 	router.PUT("event/deleteTimeslots/:eventID", event_handler.DeleteTimeslotsHandler)

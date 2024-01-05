@@ -43,9 +43,9 @@ curl --verbose -X GET -b "daf4a17a-1b69-445b-910d-488c3ddb70f9=40060f3b-be6d-430
 # add attendance for an event
 curl --verbose -X POST 
 
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best"}' http://localhost:8080/attendance/dd70c348-f97d-4e71-8ea9-c0cf5d1b9f61
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best"}' http://localhost:8080/attendance/660def8e-ba38-4f4f-a277-feff9b29fdf1
 
-curl --verbose -X GET  http://localhost:8080/attendance/5d322abb-9b9e-4c61-87d5-24d8f019bbf0
+curl --verbose -X GET  http://localhost:8080/attendance/660def8e-ba38-4f4f-a277-feff9b29fdf1
 
 curl --verbose -X GET  http://localhost:8080/event/b7c9783c-d010-462b-9d09-6d1037b974e9
 
