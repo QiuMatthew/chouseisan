@@ -1,12 +1,9 @@
 package main
 
 import (
-	"chouseisan/cookie"
-	"chouseisan/events"
 	"chouseisan/handler"
 	"chouseisan/repository"
 	"chouseisan/schedule"
-	"net/http"
 
 	"time"
 
@@ -29,14 +26,14 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	router.GET("/refreshToken", cookie.RefreshCookieHandler)
-	router.GET("/setCookie", cookie.SetCookieHandler)
+	// router.GET("/refreshToken", cookie.RefreshCookieHandler)
+	// router.GET("/setCookie", cookie.SetCookieHandler)
 	// router.GET("/cookie", getCookieHandler)
 
-	router.GET("/add-text", func(c *gin.Context) {
-		// Use the context's String method to add text to the response
-		c.String(http.StatusOK, "Hello, this is some text added to the response!")
-	})
+	// router.GET("/add-text", func(c *gin.Context) {
+	// 	// Use the context's String method to add text to the response
+	// 	c.String(http.StatusOK, "Hello, this is some text added to the response!")
+	// })
 
 	schedule.SetupScheduleRoutes(router)
 	repo := repository.NewRepository(repository.DB)
@@ -51,6 +48,8 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Printf("Event found: %v\n", event)
-	events.SetupEventsRoutes(router)
+	// events.SetupEventsRoutes(router)
+
+	handler.SetupEventRoutes(router, event_handler)
 	router.Run("0.0.0.0:8080")
 }

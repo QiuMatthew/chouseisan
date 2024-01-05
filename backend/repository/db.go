@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -9,8 +8,6 @@ import (
 )
 
 var DB *gorm.DB
-
-var db *sql.DB
 
 func init() {
 	// This function will run immediately after backend is started, used to initialize database connection

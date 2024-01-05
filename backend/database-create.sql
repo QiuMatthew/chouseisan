@@ -15,11 +15,12 @@ CREATE TABLE event_users (
   id INT PRIMARY KEY AUTO_INCREMENT,
   event_id VARCHAR(255),
   user_name VARCHAR(255),
+  comment VARCHAR(255),
   FOREIGN KEY (event_id) REFERENCES events(event_id)
 ) ENGINE MEMORY;
 
 CREATE TABLE event_timeslots (
-  event_timeslot_id INT PRIMARY KEY AUTO_INCREMENT,
+  id INT PRIMARY KEY AUTO_INCREMENT,
   event_id VARCHAR(255),
   description VARCHAR(255),
   FOREIGN KEY (event_id) REFERENCES events(event_id)
@@ -28,12 +29,12 @@ CREATE TABLE event_timeslots (
 CREATE TABLE event_user_timeslots (
   id INT PRIMARY KEY AUTO_INCREMENT,
   event_id VARCHAR(255),
-  user_id VARBINARY(16),
+  user_id INT,
   timeslot_id INT,
   preference INT,
-  user_name VARCHAR(128),
   FOREIGN KEY (event_id) REFERENCES events(event_id),
-  FOREIGN KEY (timeslot_id) REFERENCES event_timeslots(event_timeslot_id)
+  FOREIGN KEY (timeslot_id) REFERENCES event_timeslots(id),
+  FOREIGN KEY (user_id) REFERENCES event_users(id)
 ) ENGINE MEMORY;
 
 CREATE INDEX idx_event_id USING HASH ON events(event_id);
