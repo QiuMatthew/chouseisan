@@ -251,10 +251,10 @@ func (h *EventHandler) CheckEventExistsHandler(c *gin.Context) {
 	// get event info
 	if _, err := h.Repo.GetEventByID(eventID); err != nil {
 		log.Println(err)
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Event Not Found."})
+		c.IndentedJSON(http.StatusFound, gin.H{"message": "Event Not Found."})
 		return
 	}
-	c.IndentedJSON(http.StatusFound, gin.H{"message": "Event Found."})
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "Event Found."})
 }
 
 func (h *EventHandler) IsCreatedBySelfHandler(c *gin.Context) {
