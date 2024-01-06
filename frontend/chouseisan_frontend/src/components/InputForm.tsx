@@ -69,7 +69,7 @@ export default function InputForm() {
     axios
       // "http://localhost:8080/"
       .post(
-        `http://localhost:8080/createEvent`,
+        `/event`,
         {
           title: title,
           detail: detail,
