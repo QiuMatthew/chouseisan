@@ -53,7 +53,9 @@ export default function CreateComplete() {
         },
       })
       .then((response) => {
-        if (response.data.message === "Event Not Found") setIsExisted(false);
+        console.log(response.data.message);
+        if (response.data.message === "Event Not Found.") setIsExisted(false);
+        console.log(isExisted);
       })
       .catch((error) => {
         console.log(error);
