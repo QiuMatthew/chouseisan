@@ -30,7 +30,7 @@ interface NextPageParams {
 export default function CreateComplete() {
   const location = useLocation();
   const params = useParams();
-  const [isExisted, setIsExisted] = useState(false);
+  const [isExisted, setIsExisted] = useState(true);
   const textUrl =
     "http://localhost:3000/scheduler/create_complete/" + params.eventId;
   const [url, setUrl] = useState<string | undefined>(textUrl);
