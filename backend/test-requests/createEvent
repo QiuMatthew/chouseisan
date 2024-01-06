@@ -1,3 +1,0 @@
-curl -X POST -H "Content-Type: application/json" -d '{"title":"test event", "description":"test", "proposals":"a\nb\nc"}' http://localhost:8080/create-event
--> uuidが帰ってくる．
-curl http://localhost:8080/eventBasic/{uuid}

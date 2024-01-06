@@ -2,91 +2,174 @@
 package repository
 
 import (
-	"chouseisan/model"
-	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/google/uuid"
 )
 
 // Define methods for reading data from the database
-func (r Repository) GetEventById(uuid string) (model.Event, error) {
-	var event model.Event
-	row := r.db.QueryRow("SELECT BIN_TO_UUID(event_id), title, detail FROM event WHERE event_id = UUID_TO_BIN(?)", uuid)
-	if err := row.Scan(&event.EventId, &event.Title, &event.Detail); err != nil {
-		if err == sql.ErrNoRows {
-			return event, fmt.Errorf("GetEventById %s: no such event", uuid)
-		}
-		return event, fmt.Errorf("GetEventById %s: %v", uuid, err)
+
+// CreateEventInDB creates a new event in the database
+func (repo Repository) CreateEvent(title, detail string, proposals []string) (string, string, error) {
+	// issue new event id and hostToken (both are uuid)
+	newEventID := uuid.New().String()
+	hostToken := uuid.New().String()
+
+	// Create new event instance
+	newEvent := Event{
+		EventID:   newEventID,
+		Title:     title,
+		Detail:    detail,
+		HostToken: hostToken,
 	}
 
-	// Retrieve proposals from event_timeslot table
-	rows, err := r.db.Query("SELECT description FROM event_timeslot WHERE event_id = UUID_TO_BIN(?)", uuid)
+	// Insert new event info to db
+	err := repo.InsertEvent(newEvent)
 	if err != nil {
-		return event, fmt.Errorf("GetEventById %s: %v", uuid, err)
+		log.Println("Gorm Error:", err)
+		return "", "", err
 	}
-	defer rows.Close()
 
-	// Iterate through rows and append each proposal to the event
-	for rows.Next() {
-		var proposal string
-		if err := rows.Scan(&proposal); err != nil {
-			return event, fmt.Errorf("GetEventById %s: %v", uuid, err)
+	// Insert each proposal into event_timeslot
+	err = repo.InsertEventTimeslot(newEventID, proposals)
+	if err != nil {
+		log.Println("Gorm Error:", err)
+		return "", "", err
+	}
+
+	return newEventID, hostToken, nil
+}
+
+func (repo Repository) DeleteEvent(event_id string) error {
+	if err := repo.DeleteEventByID(event_id); err != nil {
+		log.Println("error deleting event from events table:", err)
+		return err
+	}
+	if err := repo.DeleteEventUserByEventID(event_id); err != nil {
+		log.Println("error deleting event from event_users table:", err)
+		return err
+	}
+	if err := repo.DeleteEventTimeslotByEventID(event_id); err != nil {
+		log.Println("error deleting event from event_timeslots table:", err)
+		return err
+	}
+	if err := repo.DeleteEventUserTimeslotByEventID(event_id); err != nil {
+		log.Println("error deleting event from event_user_timeslots table:", err)
+		return err
+	}
+	return nil
+}
+
+func (repo Repository) AddAttendance(eventID string, availability map[uint](uint), name string, comment string) error {
+	// first add user
+	newUser := EventUser{EventID: eventID, UserName: name, Comment: comment}
+	newUserID, err := repo.InsertEventUser(&newUser)
+	if err != nil {
+		log.Println("error creating new user:", err)
+		return err
+	}
+	// For each timeslot, add record to event_user_timeslots
+	for timeslot_id, preference := range availability {
+		// first check if timeslot exists
+		exist, err := repo.CheckTimeslotsExist(eventID, timeslot_id)
+		if err != nil {
+			log.Println("error checking timeslot existence")
+			return err
 		}
-		event.Proposals = append(event.Proposals, proposal)
+		if exist {
+			newEventUserTimeslot := EventUserTimeslot{EventID: eventID, UserID: newUserID, TimeslotID: timeslot_id, Preference: preference}
+			if err := repo.InsertEventUserTimeslot(newEventUserTimeslot); err != nil {
+				log.Println("error inserting availability")
+				return err
+			}
+		} //else: do nothing
 	}
+	return nil
+}
 
-	// Check for errors from iterating over rows
-	if err := rows.Err(); err != nil {
-		return event, fmt.Errorf("GetEventById %s: %v", uuid, err)
+func (repo Repository) ModifyAttendance(eventID string, availability map[uint](uint), name string, comment string, userID uint) error {
+	// For each timeslot, add record to event_user_timeslots
+	for timeslot_id, preference := range availability {
+		// first check if timeslot exists
+		exist, err := repo.CheckTimeslotsExist(eventID, timeslot_id)
+		if err != nil {
+			log.Println("error checking timeslot existence")
+			return err
+		}
+		if exist {
+			// Specify the condition to identify the row
+			if err := repo.ModifyEventUserTimeslot(eventID, timeslot_id, userID, preference); err != nil {
+				log.Println("error modifying attendance", err)
+				return err
+			}
+		} //else: do nothing
 	}
+	return nil
+}
 
-	return event, nil
+func (repo Repository) GetAllPreferences(eventID string, eventUsers []EventUser, eventTimeslots []EventTimeslot) (map[uint](map[uint](uint)), error) {
+	userAvailability := make(map[uint](map[uint](uint)))
+	for _, user := range eventUsers {
+		userMap := make(map[uint](uint))
+		for _, timeslot := range eventTimeslots {
+			preference, err := repo.GetPreference(eventID, user.ID, timeslot.ID)
+			if err != nil {
+				log.Println("error obtaining preference")
+				return userAvailability, err
+			}
+			userMap[timeslot.ID] = preference
+		}
+		userAvailability[user.ID] = userMap
+	}
+	return userAvailability, nil
 }
 
 // CreateEventInDB creates a new event in the database
-func (repo Repository) CreateEvent(title, detail string, proposals []string) (string, error) {
-	// Start a database transaction
-	tx, err := repo.db.Begin()
-	if err != nil {
-		log.Println("Error starting transaction:", err)
-		return "", err
-	}
+// func (repo Repository) CreateEvent(title, detail string, proposals []string) (string, error) {
+// 	// Start a database transaction
+// 	tx, err := repo.db.Begin()
+// 	if err != nil {
+// 		log.Println("Error starting transaction:", err)
+// 		return "", err
+// 	}
 
-	newUUID := uuid.New()
+// 	newUUID := uuid.New().String()
+// 	hostToken := uuid.New().String()
 
-	// Insert event information into the events table
-	_, err = tx.Exec("INSERT INTO event (event_id, title, detail) VALUES (?,?,?);", newUUID[:], title, detail)
-	if err != nil {
-		// Rollback the transaction in case of an error
-		tx.Rollback()
-		log.Println("Error inserting event:", err)
-		return "", err
-	}
+// 	fmt.Println(newUUID)
 
-	// Insert timeslot information into the event-timeslot table
-	stmt, err := tx.Prepare("INSERT INTO event_timeslot (event_id, timeslot_id, description) VALUES (?, ?, ?)")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
+// 	// Insert event information into the events table
+// 	_, err = tx.Exec("INSERT INTO events (event_id, title, detail, host_token) VALUES (?,?,?,?);", newUUID, title, detail, hostToken)
+// 	if err != nil {
+// 		// Rollback the transaction in case of an error
+// 		tx.Rollback()
+// 		log.Println("Error inserting event:", err)
+// 		return "", err
+// 	}
 
-	// Insert each proposal into event_timeslot
-	for i, proposal := range proposals {
-		_, err := stmt.Exec(newUUID[:], i+1, proposal)
-		if err != nil {
-			// Rollback the transaction in case of an error
-			tx.Rollback()
-			log.Fatal(err)
-		}
-	}
+// 	// Insert timeslot information into the event-timeslot table
+// 	stmt, err := tx.Prepare("INSERT INTO event_timeslots (event_id, description) VALUES (?, ?)")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	defer stmt.Close()
 
-	// Commit the transaction
-	if err := tx.Commit(); err != nil {
-		log.Println("Error committing transaction:", err)
-		return "", err
-	}
+// 	// Insert each proposal into event_timeslot
+// 	for proposal := range proposals {
+// 		_, err := stmt.Exec(newUUID, proposal)
+// 		fmt.Println(proposal)
+// 		if err != nil {
+// 			// Rollback the transaction in case of an error
+// 			tx.Rollback()
+// 			log.Fatal(err)
+// 		}
+// 	}
 
-	return newUUID.String(), nil
-}
+// 	// Commit the transaction
+// 	if err := tx.Commit(); err != nil {
+// 		log.Println("Error committing transaction:", err)
+// 		return "", err
+// 	}
+
+// 	return newUUID, nil
+// }

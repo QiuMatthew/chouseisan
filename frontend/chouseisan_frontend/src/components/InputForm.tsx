@@ -73,11 +73,12 @@ export default function InputForm() {
         {
           title: title,
           detail: detail,
-          dateList: dateList,
+          dateTimeProposal: dateList,
         },
 
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       )
       .then(function (response) {
