@@ -38,7 +38,7 @@ func (repo Repository) InsertEventUser(newEventUser *EventUser) (uint, error) {
 
 func (repo Repository) GetUsersByEventID(eventID string) ([]EventUser, error) {
 	var eventUsers []EventUser
-	query := repo.db.Where("event_id = ?", eventID).Find(&eventUsers)
+	query := repo.db.Where("event_id = ?", eventID).Order("id").Find(&eventUsers)
 
 	if query.Error != nil {
 		if query.Error == gorm.ErrRecordNotFound {
