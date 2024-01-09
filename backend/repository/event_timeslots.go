@@ -52,7 +52,7 @@ func (repo Repository) InsertEventTimeslot(eventID string, proposals []string) e
 
 func (repo Repository) GetTimeslotsByEventID(eventID string) ([]EventTimeslot, error) {
 	var eventTimeslots []EventTimeslot
-	query := repo.db.Where("event_id = ?", eventID).Find(&eventTimeslots)
+	query := repo.db.Where("event_id = ?", eventID).Order("id").Find(&eventTimeslots)
 
 	if query.Error != nil {
 		if query.Error == gorm.ErrRecordNotFound {

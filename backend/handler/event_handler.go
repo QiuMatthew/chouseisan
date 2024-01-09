@@ -31,6 +31,24 @@ type ModifyEventUserTimeslotRequest struct {
 	UserID       uint              `json:"user_id"`
 }
 
+type Schedule struct {
+	Name       string `json:"name"`
+	ID         uint   `json:"id"`
+	Annotation uint   `json:"annotation"`
+}
+
+type Participant struct {
+	Name    string `json:"name"`
+	Comment string `json:"comment"`
+	UserID  uint   `json:"user_id"`
+	Result  []uint `json:"result"`
+}
+
+type EventForm struct {
+	ScheduleList []Schedule    `json:"scheduleList"`
+	Participants []Participant `json:"participants"`
+}
+
 type DeleteTimeslotsRequest struct {
 	TimeslotIDs []uint `json:"timeslot_ids"`
 }
@@ -224,7 +242,6 @@ func (h *EventHandler) DeleteTimeslotsHandler(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully deleted some timeslots"})
-
 }
 
 func (h *EventHandler) AddTimeslotsHandler(c *gin.Context) {
@@ -320,6 +337,46 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Successfully stored preferences"})
 }
 
+func createEventForm(users []repository.EventUser, timeslots []repository.EventTimeslot, userAvailability map[uint]map[uint]uint) EventForm {
+	//Create ScheduleList from EventTimeslot
+	scheduleList := make([]Schedule, len(timeslots))
+	timeslotIDToIndex := make(map[uint]int)
+	for i, timeslot := range timeslots {
+		scheduleList[i] = Schedule{
+			Name:       timeslot.Description,
+			ID:         timeslot.ID,
+			Annotation: 0, // Set this accordingly
+		}
+		timeslotIDToIndex[timeslot.ID] = i
+	}
+
+	// Create patricipants
+
+	participants := make([]Participant, len(users))
+	for i, user := range users {
+		result := make([]uint, len(timeslots))
+		if availability, ok := userAvailability[user.ID]; ok {
+			for timeslotID, preference := range availability {
+				if index, exists := timeslotIDToIndex[timeslotID]; exists {
+					result[index] = preference
+				}
+			}
+		}
+
+		participants[i] = Participant{
+			Name:    user.UserName,
+			Comment: user.Comment,
+			UserID:  user.ID,
+			Result:  result,
+		}
+	}
+
+	return EventForm{
+		ScheduleList: scheduleList,
+		Participants: participants,
+	}
+}
+
 func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
 	eventID := c.Param("eventID")
 
@@ -341,10 +398,14 @@ func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error obtaining preferences"})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully got all preferences",
-		"userAvailability": preferences,
-		"users":            eventUsers,
-		"timeslots":        eventTimeslots})
+
+	eventForm := createEventForm(eventUsers, eventTimeslots, preferences)
+
+	// c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully got all preferences",
+	// 	"userAvailability": preferences,
+	// 	"users":            eventUsers,
+	// 	"timeslots":        eventTimeslots})
+	c.IndentedJSON(http.StatusOK, eventForm)
 }
 
 func (h *EventHandler) GetEventBasicHandler(c *gin.Context) {
@@ -355,7 +416,13 @@ func (h *EventHandler) GetEventBasicHandler(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error obtaining event"})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"title": event.Title, "detail": event.Detail})
+	users, err := h.Repo.GetUsersByEventID(eventID)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error obtaining users"})
+		return
+	}
+	num_users := len(users)
+	c.IndentedJSON(http.StatusOK, gin.H{"title": event.Title, "detail": event.Detail, "num_users": num_users})
 
 }
 
