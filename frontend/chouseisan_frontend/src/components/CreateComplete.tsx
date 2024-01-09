@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import "./CreateComplete.css";
 import axios from "../utils/axios";
+import Nonexist from "./Nonexist";
 interface NextPageParams {
   uuid: string;
 }
@@ -32,7 +33,7 @@ export default function CreateComplete() {
   const params = useParams();
   const [isExisted, setIsExisted] = useState(true);
   const textUrl =
-    "http://localhost:3000/scheduler/create_complete/" + params.eventId;
+    "http://localhost:3000/scheduler/view_event/" + params.eventId;
   const [url, setUrl] = useState<string | undefined>(textUrl);
   const input =
     params.eventId?.slice(0, 8) +
@@ -47,21 +48,15 @@ export default function CreateComplete() {
 
   useEffect(() => {
     axios
-      .get(`/event/exist/${input}`, {
-        validateStatus: function (status) {
-          return status >= 200 && status <= 302; // default
-        },
-      })
+      .get(`/event/exist/${input}`)
       .then((response) => {
-        console.log(response.data.message);
         if (response.data.message === "Event Not Found.") setIsExisted(false);
-        console.log(isExisted);
       })
       .catch((error) => {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
-  });
+  }, []);
 
   return (
     <>
@@ -88,7 +83,7 @@ export default function CreateComplete() {
             size="large"
             variant="contained"
             component={Link}
-            to="/view_event"
+            to={textUrl}
             sx={{
               width: 300,
               height: 50,
@@ -103,14 +98,7 @@ export default function CreateComplete() {
           </Button>
         </div>
       ) : (
-        <div className="container">
-          <h2 className="form-header">
-            We are sorry we couldn't locate that page
-          </h2>
-          <h4 className="description">
-            The event does not exist or has expired/been deleted.
-          </h4>
-        </div>
+        <Nonexist />
       )}
     </>
   );

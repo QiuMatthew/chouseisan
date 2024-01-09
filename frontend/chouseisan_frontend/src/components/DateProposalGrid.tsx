@@ -30,6 +30,7 @@ import axios from "axios";
 
 import { event, proposal, addAttendence } from "../types/Event";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { click } from "@testing-library/user-event/dist/click";
 
 interface MyObject {
   [key: string]: JSX.Element;
@@ -41,7 +42,7 @@ interface rowData {
   unknown: number | string;
   no: number | string;
 }
-export default function () {
+export default function (props: any) {
   const [rows, setRows] = useState<rowData[]>([]);
   const [columns, setColumns] = useState<GridColDef[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
@@ -77,8 +78,9 @@ export default function () {
 
   React.useEffect(() => {
     axios
-      .get(`/eventData`)
+      .get(`/attendance/${props.uuid}`)
       .then((response) => {
+        console.log(response.data);
         // console.log(response.data);
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
@@ -257,32 +259,41 @@ export default function () {
 
   return (
     <>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        rowHeight={60}
-        showCellVerticalBorder
-        showColumnVerticalBorder
-        disableColumnFilter
-        disableColumnSelector
-        disableColumnMenu
-        sx={{
-          maxWidth: 100 * columns.length,
-          "& .dataForm-header": { backgroundColor: "#f1f1f1" },
-          "& .dataForm-cell": {
-            justifyContent: "center",
-          },
-          "& .MuiDataGrid-root": {
-            whiteSpace: "normal",
-            wordWrap: "break-word",
-          },
-          "& .MuiDataGrid-row:not(.MuiDataGrid-row--dynamicHeight)>.MuiDataGrid-cell":
-            {
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          rowHeight={60}
+          showCellVerticalBorder
+          showColumnVerticalBorder
+          disableColumnFilter
+          disableColumnSelector
+          disableColumnMenu
+          sx={{
+            maxWidth: 100 * columns.length,
+            "& .dataForm-header": { backgroundColor: "#f1f1f1" },
+            "& .dataForm-cell": {
+              justifyContent: "center",
+            },
+            "& .MuiDataGrid-root": {
               whiteSpace: "normal",
               wordWrap: "break-word",
             },
-        }}
-      />
+            "& .MuiDataGrid-row:not(.MuiDataGrid-row--dynamicHeight)>.MuiDataGrid-cell":
+              {
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              },
+          }}
+        />
+      </div>
+
       <div
         className="add-container"
         style={{

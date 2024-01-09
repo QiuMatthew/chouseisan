@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import CreateComplete from "./components/CreateComplete";
 import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import RouteSetting from "./utils/RouteSetting";
+import HistorySimpler from "./components/HistorySimpler";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -24,6 +25,8 @@ root.render(
       >
         <App />
         <RouteSetting />
+        <HistorySimpler/>
+        
       </Box>
     </BrowserRouter>
   </React.StrictMode>

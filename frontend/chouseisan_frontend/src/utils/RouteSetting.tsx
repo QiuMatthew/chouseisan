@@ -14,7 +14,9 @@ export default function RouteSetting() {
         <Route path="/create_complete">
           <Route path=":eventId" element={<CreateComplete />} />
         </Route>
-        <Route path="/view_event" element={<ViewEvent />} />
+        <Route path="/view_event">
+          <Route path=":eventId" element={<ViewEvent />} />
+        </Route>
         <Route path="/history" element={<History />} />
         <Route path="/edit" element={<EditEvent />} />
       </Routes>

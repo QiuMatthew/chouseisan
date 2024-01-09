@@ -1,35 +1,67 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Box, Button, Link } from "@mui/material";
 import "./ViewEvent.css";
 import FlagIcon from "@mui/icons-material/Flag";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import DateProposalGrid from "./DateProposalGrid";
 import noIcon from "../images/no.png";
+import { useParams } from "react-router-dom";
+import axios from "../utils/axios";
+import Nonexist from "./Nonexist";
+
 export default function ViewEvent() {
   const event = {
     eventName: "meeting",
     eventDetail: "123",
     respondents: 2,
   };
-  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [no, setNo] = useState(0);
-
-  React.useEffect(() => {
+  const params = useParams();
+  const [isExisted, setIsExisted] = useState(false);
+  const input =
+    params.eventId?.slice(0, 8) +
+    "-" +
+    params.eventId?.slice(8, 12) +
+    "-" +
+    params.eventId?.slice(12, 16) +
+    "-" +
+    params.eventId?.slice(16, 20) +
+    "-" +
+    params.eventId?.slice(20, 32);
+  useEffect(() => {
     axios
-      .get(`/eventBasic`)
+      .get(`/event/exist/${input}`)
       .then((response) => {
-        setName(response.data.name);
-        setNo(response.data.number);
-        setDetail(response.data.detail);
+        console.log(response.data.message);
+        if (response.data.message === "Event Found.") setIsExisted(true);
+        console.log(isExisted);
       })
-      .catch((reason) => {
-        console.log(reason);
+      .catch((error) => {
+        console.log(error);
         console.log("ERROR connecting backend service");
       });
-  }, []);
-  return (
+  });
+
+  React.useEffect(() => {
+    if (isExisted) {
+      axios
+        .get(`/event/basic/${input}`)
+        .then((response) => {
+          setTitle(response.data.title);
+          console.log(response.data);
+          setNo(response.data.number);
+          setDetail(response.data.detail);
+        })
+        .catch((reason) => {
+          console.log(reason);
+          console.log("ERROR connecting backend service");
+        });
+    }
+  }, [isExisted]);
+
+  return isExisted ? (
     <>
       <div className="container1">
         <Link
@@ -41,9 +73,10 @@ export default function ViewEvent() {
           Host a new event
         </Link>
         <div className="event-header">
-          {name}
+          {title}
           <Button
             variant="outlined"
+            href="/scheduler/edit"
             sx={{
               position: "absolute",
               right: 0,
@@ -73,9 +106,11 @@ export default function ViewEvent() {
         <div className="container2">
           <p className="event-detail">Date Proposals</p>
           <p>Click on the name to edit your response.</p>
-          <DateProposalGrid />
+          <DateProposalGrid uuid={input}/>
         </div>
       </Box>
     </>
+  ) : (
+    <Nonexist />
   );
 }
