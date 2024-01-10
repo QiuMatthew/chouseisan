@@ -21,6 +21,7 @@ type EventRequest struct {
 type EventUserTimeslotRequest struct {
 	Availability map[string](uint) `json:"availability"`
 	Name         string            `json:"name"`
+	Email        string            `json:"email"`
 	Comment      string            `json:"comment"`
 }
 
@@ -172,8 +173,9 @@ func (h *EventHandler) EditTitleDetailHandler(c *gin.Context) {
 func (h *EventHandler) GetTimeslotsHandler(c *gin.Context) {
 	eventID := c.Param("eventID")
 	// get event info
-	if _, err := h.Repo.GetEventByID(eventID); err != nil {
-		log.Println(err)
+	event, event_err := h.Repo.GetEventByID(eventID)
+	if event_err != nil {
+		log.Println(event_err)
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Event Not Found."})
 		return
 	}
@@ -188,17 +190,22 @@ func (h *EventHandler) GetTimeslotsHandler(c *gin.Context) {
 
 	// make timeslots hash dict
 
-	timeslotsDict := make(map[string]map[uint]string)
+	//timeslotsDict := make(map[string]map[uint]string)
+
+	timeslotsDict := make(map[uint]string)
 
 	for _, timeslot := range timeslots {
-		if _, ok := timeslotsDict["timeslots"]; !ok {
-			timeslotsDict["timeslots"] = make(map[uint]string)
-		}
+		// if _, ok := timeslotsDict["timeslots"]; !ok {
+		// 	timeslotsDict["timeslots"] = make(map[uint]string)
+		// }
 
-		timeslotsDict["timeslots"][timeslot.ID] = timeslot.Description
+		timeslotsDict[timeslot.ID] = timeslot.Description
 	}
 
-	c.IndentedJSON(http.StatusOK, timeslotsDict)
+	// add event title to timeslotsDict
+	// timeslotsDict["title"] = event.Title
+
+	c.IndentedJSON(http.StatusOK, gin.H{"title": event.Title, "timeslots": timeslotsDict})
 }
 
 func (h *EventHandler) DeleteTimeslotsHandler(c *gin.Context) {
@@ -329,7 +336,7 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 		uintAvailability[uint(uintKey)] = value
 	}
 
-	err := h.Repo.AddAttendance(eventID, uintAvailability, req.Name, req.Comment)
+	err := h.Repo.AddAttendance(eventID, uintAvailability, req.Name, req.Comment, req.Email)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error storing preferences"})
 		return
@@ -441,6 +448,20 @@ func (h *EventHandler) ModifyAttendanceHandler(c *gin.Context) {
 		return
 	}
 
+	// the following checking part and modifying part could be integrated (will be more efficient), but for now we do it separately
+	// check if user exists
+	if _, err := h.Repo.CheckIfUserExists(eventID, req.UserID); err != nil {
+		log.Println(err)
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User Not Found."})
+		return
+	}
+
+	// modify user info
+	if err := h.Repo.ModifyEventUser(eventID, req.UserID, req.Name, req.Comment); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error updating user information"})
+		return
+	}
+
 	// convert availability map's key to integer
 	uintAvailability := make(map[uint](uint))
 	for strKey, value := range req.Availability {
@@ -455,9 +476,10 @@ func (h *EventHandler) ModifyAttendanceHandler(c *gin.Context) {
 
 	err := h.Repo.ModifyAttendance(eventID, uintAvailability, req.Name, req.Comment, req.UserID)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error storing preferences"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error updating preferences"})
 		return
 	}
+
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully modified preferences"})
 
 }

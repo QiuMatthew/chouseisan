@@ -60,9 +60,9 @@ func (repo Repository) DeleteEvent(event_id string) error {
 	return nil
 }
 
-func (repo Repository) AddAttendance(eventID string, availability map[uint](uint), name string, comment string) error {
+func (repo Repository) AddAttendance(eventID string, availability map[uint](uint), name string, comment string, email string) error {
 	// first add user
-	newUser := EventUser{EventID: eventID, UserName: name, Comment: comment}
+	newUser := EventUser{EventID: eventID, UserName: name, Email: email, Comment: comment}
 	newUserID, err := repo.InsertEventUser(&newUser)
 	if err != nil {
 		log.Println("error creating new user:", err)

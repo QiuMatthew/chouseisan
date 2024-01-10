@@ -16,6 +16,7 @@ CREATE TABLE event_users (
   event_id VARCHAR(255),
   user_name VARCHAR(255),
   comment VARCHAR(255),
+  email VARCHAR(255),
   FOREIGN KEY (event_id) REFERENCES events(event_id)
 ) ENGINE MEMORY;
 
