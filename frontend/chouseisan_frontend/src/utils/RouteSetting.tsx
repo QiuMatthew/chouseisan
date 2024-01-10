@@ -18,7 +18,9 @@ export default function RouteSetting() {
           <Route path=":eventId" element={<ViewEvent />} />
         </Route>
         <Route path="/history" element={<History />} />
-        <Route path="/edit" element={<EditEvent />} />
+        <Route path="/edit">
+          <Route path=":eventId" element={<EditEvent />} />
+        </Route>
       </Routes>
     </>
   );

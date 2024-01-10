@@ -1,5 +1,7 @@
 import { List, ListItem, ListItemText, Button, Grid } from "@mui/material";
 import "./HistorySimpler.css";
+import axios from "../utils/axios";
+
 export default function HistorySimpler() {
   const buttonStyle = {
     width: "465px",
@@ -53,7 +55,7 @@ export default function HistorySimpler() {
                     },
 
                     // padding: "3px",
-                    width: "130px",
+                    maxWidth: "130px",
                   }}
                 >
                   <ListItemText primary={`${num}`} sx={{ padding: "1px" }} />
@@ -88,7 +90,7 @@ export default function HistorySimpler() {
                     },
 
                     // padding: "3px",
-                    width: "130px",
+                    maxWidth: "130px",
                   }}
                 >
                   <ListItemText primary={`${num}`} sx={{ padding: "1px" }} />

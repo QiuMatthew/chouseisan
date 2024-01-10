@@ -10,6 +10,8 @@ import CreateComplete from "./components/CreateComplete";
 import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import RouteSetting from "./utils/RouteSetting";
 import HistorySimpler from "./components/HistorySimpler";
+import SelfEventListProvider from "./contexts/EventBySelf";
+import HistoryEventProvider from "./contexts/HistoryEvent";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -23,10 +25,13 @@ root.render(
           fontFamily: "Lucida Grande",
         }}
       >
-        <App />
-        <RouteSetting />
-        <HistorySimpler/>
-        
+        <HistoryEventProvider>
+          <SelfEventListProvider>
+            <App />
+            <RouteSetting />
+            <HistorySimpler />
+          </SelfEventListProvider>
+        </HistoryEventProvider>
       </Box>
     </BrowserRouter>
   </React.StrictMode>

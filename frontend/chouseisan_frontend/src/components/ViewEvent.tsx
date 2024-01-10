@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box, Button, Link } from "@mui/material";
 import "./ViewEvent.css";
 import FlagIcon from "@mui/icons-material/Flag";
@@ -8,8 +8,13 @@ import noIcon from "../images/no.png";
 import { useParams } from "react-router-dom";
 import axios from "../utils/axios";
 import Nonexist from "./Nonexist";
+import { SelfEventContext } from "../contexts/EventBySelf";
+import { HistoryEventContext } from "../contexts/HistoryEvent";
+import { InputSharp } from "@mui/icons-material";
 
 export default function ViewEvent() {
+  const { selfEventList, setSelfEventList } = useContext(SelfEventContext);
+  const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
   const event = {
     eventName: "meeting",
     eventDetail: "123",
@@ -34,9 +39,9 @@ export default function ViewEvent() {
     axios
       .get(`/event/exist/${input}`)
       .then((response) => {
-        console.log(response.data.message);
         if (response.data.message === "Event Found.") setIsExisted(true);
-        console.log(isExisted);
+        console.log(selfEventList);
+        console.log("history" + historyEvent);
       })
       .catch((error) => {
         console.log(error);
@@ -45,13 +50,18 @@ export default function ViewEvent() {
   });
 
   React.useEffect(() => {
+    setHistoryEvent((historyEvent) => {
+      if (historyEvent.includes(input)) return historyEvent;
+      else if (historyEvent.length >= 5)
+        return [input, ...historyEvent.slice(1)];
+      else return [input, ...historyEvent];
+    });
     if (isExisted) {
       axios
         .get(`/event/basic/${input}`)
         .then((response) => {
           setTitle(response.data.title);
-          console.log(response.data);
-          setNo(response.data.number);
+          setNo(response.data.num_users);
           setDetail(response.data.detail);
         })
         .catch((reason) => {
@@ -74,17 +84,20 @@ export default function ViewEvent() {
         </Link>
         <div className="event-header">
           {title}
-          <Button
-            variant="outlined"
-            href="/scheduler/edit"
-            sx={{
-              position: "absolute",
-              right: 0,
-              fontSize: 15,
-            }}
-          >
-            Edit this event
-          </Button>
+          {selfEventList.includes(params.eventId as string) && (
+            <Button
+              variant="outlined"
+              // href="/edit"
+              href={"/scheduler/edit/" + params.eventId}
+              sx={{
+                position: "absolute",
+                right: 0,
+                fontSize: 15,
+              }}
+            >
+              Edit this event
+            </Button>
+          )}
         </div>
         <p className="event-info">
           <span className="no-label">No. of respondents</span>
@@ -106,7 +119,7 @@ export default function ViewEvent() {
         <div className="container2">
           <p className="event-detail">Date Proposals</p>
           <p>Click on the name to edit your response.</p>
-          <DateProposalGrid uuid={input}/>
+          <DateProposalGrid uuid={input} />
         </div>
       </Box>
     </>

@@ -1,6 +1,6 @@
 import React, { useRef, useState, forwardRef, useEffect } from "react";
-import { EventNote, NoiseAware } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { EventNote, NoiseAware, SetMeal } from "@mui/icons-material";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Link,
@@ -26,9 +26,15 @@ import ClearIcon from "@mui/icons-material/Clear";
 import unknownIcon from "../images/unknown.png";
 // import axios from "../utils/axios";
 import "./DateProposalGrid.css";
-import axios from "axios";
+import axios from "../utils/axios";
 
-import { event, proposal, addAttendence } from "../types/Event";
+import {
+  event,
+  proposal,
+  addAttendence,
+  schedule,
+  nameId,
+} from "../types/Event";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { click } from "@testing-library/user-event/dist/click";
 
@@ -42,6 +48,7 @@ interface rowData {
   unknown: number | string;
   no: number | string;
 }
+
 export default function (props: any) {
   const [rows, setRows] = useState<rowData[]>([]);
   const [columns, setColumns] = useState<GridColDef[]>([]);
@@ -49,9 +56,13 @@ export default function (props: any) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
+  const [email, setEmail] = useState("");
+  const [idList, setIdList] = useState<number[]>([]);
+  const [nameList, setNameList] = useState<nameId>({});
   const [schedule, setSchedule] = useState([0]);
   const [textFieldValue, setTextFieldValue] = useState("");
   const navigate = useNavigate();
+  const params = useParams();
   const handleSelection = (
     event: React.MouseEvent<HTMLElement>,
     newSelection: number | null
@@ -81,7 +92,6 @@ export default function (props: any) {
       .get(`/attendance/${props.uuid}`)
       .then((response) => {
         console.log(response.data);
-        // console.log(response.data);
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
         setSchedule(Array(response.data.scheduleList.length).fill(undefined));
@@ -91,29 +101,55 @@ export default function (props: any) {
         console.log("ERROR connecting backend service");
       });
   }, []);
-
-  const onSubmit: SubmitHandler<addAttendence> = (data) => {
-    axios
-      .post(`/addAttendence`, {
-        name: data.name,
-        result: data.result,
-        comment: data.comment,
-      })
-      .then(function (response) {
-        console.log(response);
-        // navigate("/view_event");
-        window.location.reload();
-      })
-      .catch(function (response) {
-        console.log("ERROR connecting backend service");
-      });
+  const getAvailability = (result: number[], idList: number[]) => {
+    let availability = Object.fromEntries(
+      idList.map((key, index) => [key, result[index]])
+    );
+    return availability;
   };
-  // console.log("errors=", errors);
+  const onSubmit: SubmitHandler<addAttendence> = (data) => {
+    if (Object.keys(nameList).includes(data.name)) {
+      axios
+        .put(`/attendance/${props.uuid}`, {
+          name: data.name,
+          availability: getAvailability(data.result, idList),
+          comment: data.comment,
+          user_id: nameList[data.name],
+        })
+        .then(function (response) {
+          console.log(response);
+          navigate(`/view_event/${params.eventId}`);
+          window.location.reload();
+        })
+        .catch(function (response) {
+          console.log("ERROR connecting backend service");
+        });
+    } else {
+      axios
+        .post(`/attendance/${props.uuid}`, {
+          name: data.name,
+          availability: getAvailability(data.result, idList),
+          comment: data.comment,
+        })
+        .then(function (response) {
+          console.log(response);
+          navigate(`/view_event/${params.eventId}`);
+          window.location.reload();
+        })
+        .catch(function (response) {
+          console.log("ERROR connecting backend service");
+        });
+    }
+  };
   const generateRows = (eventObject: event) => {
     let rows: rowData[] = [];
     eventObject.scheduleList.map((schedule, index) => {
+      setIdList((idList) => {
+        if (idList.includes(schedule.id)) return [...idList];
+        else return [...idList, schedule.id];
+      });
+
       let [yesNum, unknownNum, noNum] = [0, 0, 0];
-      let nameList: MyObject = {};
       eventObject.participants.map((obj) => {
         if (obj.result[index] === 1) {
           yesNum += 1;
@@ -125,7 +161,7 @@ export default function (props: any) {
       });
       rows.push({
         id: index + 1,
-        Schedule: schedule,
+        Schedule: schedule.name,
         yes: yesNum,
         unknown: unknownNum,
         no: noNum,
@@ -190,6 +226,10 @@ export default function (props: any) {
     };
 
     eventObject.participants.map((obj) => {
+      setNameList((nameList) => {
+        if (Object.keys(nameList).includes(obj.name)) return { ...nameList };
+        else return { ...nameList, [obj.name]: obj.user_id };
+      });
       //处理列
       const imgList: string[] = [];
       let objectPosition = "";
@@ -217,9 +257,6 @@ export default function (props: any) {
                   comment: obj.comment,
                 });
                 setShowAddForm((showAddForm) => true);
-                setTextFieldValue(() => obj.name);
-                setSchedule(() => obj.result);
-                setComment(() => obj.comment);
 
                 setTimeout(() => {
                   if (targetRef.current) {

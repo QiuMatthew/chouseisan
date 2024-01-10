@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useContext } from "react";
 import {
   Routes,
   Route,
@@ -50,6 +50,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers";
 import * as timezone from "dayjs/plugin/timezone";
 import axios from "../utils/axios";
+import { SelfEventContext } from "../contexts/EventBySelf";
 // type CustomLocation = {
 //   state: { from: { pathname: string } };
 // };
@@ -58,6 +59,7 @@ export default function InputForm() {
   const [dateList, setDateList] = React.useState("");
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
+  const { selfEventList, setSelfEventList } = useContext(SelfEventContext);
   const [uuid, setUuid] = useState("");
   const navigate = useNavigate();
   const utc = require("dayjs/plugin/utc");
@@ -83,6 +85,8 @@ export default function InputForm() {
       )
       .then(function (response) {
         let uuid = response.data.event_id.replace(/-/g, "");
+        setSelfEventList((selfEventList) => [...selfEventList, uuid]);
+        
         navigate(`/create_complete/${uuid}`);
       })
       .catch(function (response) {

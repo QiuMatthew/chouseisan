@@ -2,11 +2,21 @@ export type proposal = {
   name: string;
   comment: string;
   result: number[];
+  user_id: number
 };
 export type event = {
-  scheduleList: string[];
+  scheduleList: schedule[];
   participants: proposal[];
 };
+export type nameId={
+  [name:string]: number
+}
+export type timeslots={[eventId:number]:string}
+export type schedule={
+  name:string;
+  id: number;
+  annotation:number
+}
 export type addAttendence = {
   name: string;
   email:string

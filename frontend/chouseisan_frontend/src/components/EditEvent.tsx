@@ -5,6 +5,7 @@ import {
   Link as Link2,
   useNavigate,
   useLocation,
+  useParams,
 } from "react-router-dom";
 
 import {
@@ -64,7 +65,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers";
 import * as timezone from "dayjs/plugin/timezone";
-import axios from "axios";
+import axios from "../utils/axios";
 import {
   DataGrid,
   GridRowsProp,
@@ -73,21 +74,10 @@ import {
   GridClasses,
 } from "@mui/x-data-grid";
 import DateProposalGrid from "./DateProposalGrid";
+import { authAxios } from "../utils/axios";
+import { timeslots } from "../types/Event";
+import Nonexist from "./Nonexist";
 
-// type CustomLocation = {
-//   state: { from: { pathname: string } };
-// };
-// const useStyles = makeStyles((theme:Theme) =>
-//   createStyles({
-//     tableCell: {
-//       borderRight: "1px solid #ddd", // 设置竖线样式
-//       padding: "8px", // 调整单元格的内边距
-//       weight: 210,
-//       fontSize: 18,
-//       fontWeight: 800,
-//     }
-//   })
-// );
 export default function EditEvent() {
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
@@ -95,14 +85,13 @@ export default function EditEvent() {
   const [no, setNo] = useState(0);
   const [clicked, setClicked] = useState(false);
   const japanTime = dayjs();
-  const [dateList, setDateList] = useState([
-    "123456",
-    "789012",
-    "sdfoiuhiodfsh",
-  ]);
+  const [dateList, setDateList] = useState<timeslots>({});
+  const [deletedDates, setDeletedDates] = useState<number[]>([]);
   const [newList, setNewList] = useState("");
   const navigate = useNavigate();
   const [addDate, setAddDate] = useState("");
+  const [isExisted, setIsExisted] = useState(true);
+
   let addDate2 = "";
   const utc = require("dayjs/plugin/utc");
   const leftCellStyle = {
@@ -115,9 +104,76 @@ export default function EditEvent() {
   const rightCellStyle = {
     padding: "10px",
   };
-  
-  // const classes = useStyles();
-  return (
+  const params = useParams();
+  const input =
+    params.eventId?.slice(0, 8) +
+    "-" +
+    params.eventId?.slice(8, 12) +
+    "-" +
+    params.eventId?.slice(12, 16) +
+    "-" +
+    params.eventId?.slice(16, 20) +
+    "-" +
+    params.eventId?.slice(20, 32);
+  useEffect(() => {
+    axios
+      .get(`/event/exist/${input}`)
+      .then((response) => {
+        if (response.data.message === "Event Not Found.") setIsExisted(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("ERROR connecting backend service");
+      });
+  }, []);
+  useEffect(() => {
+    axios
+      .get(`/event/timeslots/${input}`)
+      .then((response) => {
+        setDateList(response.data.timeslots);
+        //title, detail are not completed
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("ERROR connecting backend service");
+      });
+  }, []);
+  const eventEdit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (deletedDates.length > 0) {
+      axios
+        .put(`/event/deleteTimeslots/${input}`, { timeslot_ids: deletedDates })
+        .then((response) => {})
+        .catch((error) => {
+          console.log(error);
+          console.log("ERROR connecting backend service");
+        });
+    }
+    axios
+      .put(`/event/addTimeslots/${input}`, { dateTimeProposal: newList })
+      .then((response) => {})
+      .catch((error) => {
+        console.log(error);
+        console.log("ERROR connecting backend service");
+      });
+    axios
+      .put(`/event/editTitleDetail/${input}`, { title: title, detail: detail })
+      .then((response) => {})
+      .catch((error) => {
+        console.log(error);
+        console.log("ERROR connecting backend service");
+      });
+  };
+  const deleteEvent = () => {
+    axios
+      .delete(`/event/${input}`)
+      .then((response) => {})
+      .catch((error) => {
+        console.log(error);
+        console.log("ERROR connecting backend service");
+      });
+  };
+  return isExisted ? (
     <>
       <p className="firstLink">
         <Link
@@ -126,7 +182,8 @@ export default function EditEvent() {
           underline="hover"
           sx={{ marginBottom: "15px" }}
         >
-          {title}
+          {/* need to be title */}
+          {}
         </Link>
         {" > "}Edit/Delete Event
       </p>
@@ -149,6 +206,7 @@ export default function EditEvent() {
                   <TextField
                     fullWidth
                     helperText="Team Dinner Party”, “Project Meeting”, etc..."
+                    onChange={(e) => setTitle(e.target.value)}
                   ></TextField>
                 </TableCell>
               </TableRow>
@@ -161,6 +219,7 @@ export default function EditEvent() {
                     multiline
                     rows={3}
                     helperText="*Let’s schedule the party! Please respond by ___"
+                    onChange={(e) => setDetail(e.target.value)}
                   ></TextField>
                 </TableCell>
               </TableRow>
@@ -169,7 +228,7 @@ export default function EditEvent() {
                 <TableCell style={rightCellStyle}>
                   <h2>Delete proposed dates</h2>
                   <List>
-                    {dateList.map((value, index) => (
+                    {Object.entries(dateList).map((value, index) => (
                       <ListItem
                         key={index}
                         sx={{
@@ -184,15 +243,19 @@ export default function EditEvent() {
                         <ListItemSecondaryAction>
                           <IconButton
                             onClick={() => {
-                              const updatedList = [...dateList];
-                              updatedList.splice(index, 1);
-                              setDateList(updatedList);
+                              const newObject = Object.assign({}, dateList);
+                              delete newObject[Number(value[0])];
+                              setDateList((dateList) => newObject);
+                              setDeletedDates((deletedDates) => [
+                                ...deletedDates,
+                                Number(value[0]),
+                              ]);
                             }}
                           >
                             <DeleteIcon />
                           </IconButton>
                         </ListItemSecondaryAction>
-                        <ListItemText primary={value} />
+                        <ListItemText primary={value[1]} />
                       </ListItem>
                     ))}
                   </List>
@@ -240,30 +303,36 @@ export default function EditEvent() {
           </Table>
         </TableContainer>
 
-        <ButtonGroup
-          sx={{
-            position: "absolute",
-            transform: "translate(-50%, -50%)",
-            marginTop: 5,
-            marginBottom: 10,
-            left: "50%",
-            height: 50,
-          }}
-        >
-          <Button
+        <form onSubmit={eventEdit}>
+          <ButtonGroup
             sx={{
-              marginRight: "58px",
-              borderRadius: 0,
-              width: 150,
+              position: "absolute",
+              transform: "translate(-50%, -50%)",
+              marginTop: 5,
+              marginBottom: 10,
+              left: "50%",
+              height: 50,
             }}
-            variant="contained"
           >
-            Go Back
-          </Button>
-          <Button sx={{ borderRadius: 0, width: 300 }} variant="contained">
-            Save Changes
-          </Button>
-        </ButtonGroup>
+            <Button
+              sx={{
+                marginRight: "58px",
+                borderRadius: 0,
+                width: 150,
+              }}
+              variant="contained"
+            >
+              Go Back
+            </Button>
+            <Button
+              sx={{ borderRadius: 0, width: 300 }}
+              variant="contained"
+              type="submit"
+            >
+              Save Changes
+            </Button>
+          </ButtonGroup>
+        </form>
         <div className="event-header2">Edit/Delete Event</div>
         <TableContainer
           component={Paper}
@@ -312,6 +381,7 @@ export default function EditEvent() {
                     onClick={() => {
                       setClicked(true);
                       if (clicked) {
+                        deleteEvent();
                       }
                     }}
                   >
@@ -327,5 +397,7 @@ export default function EditEvent() {
         </TableContainer>
       </div>
     </>
+  ) : (
+    <Nonexist />
   );
 }
