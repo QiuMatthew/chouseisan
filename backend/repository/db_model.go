@@ -11,6 +11,7 @@ type EventUser struct {
 	ID       uint   `gorm:"primaryKey"`
 	EventID  string `gorm:"column:event_id"`
 	UserName string `gorm:"column:user_name"`
+	Email    string `gorm:"column:email"`
 	Comment  string `gorm:"column:comment"`
 }
 

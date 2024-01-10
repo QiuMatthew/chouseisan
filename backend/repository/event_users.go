@@ -48,3 +48,40 @@ func (repo Repository) GetUsersByEventID(eventID string) ([]EventUser, error) {
 	}
 	return eventUsers, nil
 }
+
+func (repo Repository) CheckIfUserExists(eventID string, userID uint) (bool, error) {
+	var eventUser EventUser
+	result := repo.db.Where("id = ? AND event_id = ?", userID, eventID).First(&eventUser)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			fmt.Println("Record not found")
+			return false, nil
+		} else {
+			fmt.Println("Error occurred:", result.Error)
+			return false, result.Error
+		}
+	}
+	fmt.Println("Record found:", eventUser)
+	return true, nil
+}
+
+func (repo Repository) ModifyEventUser(eventID string, userID uint, name string, comment string) error {
+	condition := EventUser{
+		ID:      userID,
+		EventID: eventID,
+	}
+
+	// Use the FirstOrCreate method
+	if err := repo.db.
+		Where(condition).
+		Assign(EventUser{UserName: name, Comment: comment}).
+		FirstOrCreate(&EventUser{}).
+		Error; err != nil {
+		// Handle the error, if any
+		fmt.Println("Error:", err)
+		return err
+	}
+	// Update or create successful
+	fmt.Println("Preference updated or row created")
+	return nil
+}

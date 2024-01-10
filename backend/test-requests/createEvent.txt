@@ -22,7 +22,7 @@ curl --verbose -X PUT -b "93610a3a-bab0-46e9-a10b-c11911a60d64=bb825832-6940-45c
 
 # getting timeslots of the event
 curl --verbose -X GET  http://localhost:8080/event/timeslots/{event_id}
-curl --verbose -X GET  http://localhost:8080/event/timeslots/02a133c4-51b0-4689-be7b-249be9268321
+curl --verbose -X GET  http://localhost:8080/event/timeslots/e4743fa0-beb2-4cf3-9eb5-8c68e68bd88c
 
 
 # deleting some timeslots of the event
@@ -43,9 +43,9 @@ curl --verbose -X GET -b "daf4a17a-1b69-445b-910d-488c3ddb70f9=40060f3b-be6d-430
 # add attendance for an event
 curl --verbose -X POST 
 
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best"}' http://localhost:8080/attendance/c5e1681b-f6fb-4cdb-9822-9f0823f0581c
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best", "email": "a@yakiniku.com"}' http://localhost:8080/attendance/2316b9ae-5229-4733-8fe5-7d7ba2026b6f
 
-curl --verbose -X GET  http://localhost:8080/attendance/c5e1681b-f6fb-4cdb-9822-9f0823f0581c
+curl --verbose -X GET  http://localhost:8080/attendance/7284c5cf-80de-45b0-a58c-671f30e040d6
 
 curl --verbose -X GET  http://localhost:8080/event/b7c9783c-d010-462b-9d09-6d1037b974e9
 
@@ -53,8 +53,10 @@ curl --verbose -X GET  http://localhost:8080/event/b7c9783c-d010-462b-9d09-6d103
 
 # modify attendance for an event
 
-curl --verbose -X PUT -H "Content-Type: application/json" -d '{"availability": {"1": 3, "2": 3,"3": 3},"name": "John","comment": "tomorrow is best", "user_id": 1}' http://localhost:8080/attendance/482975d0-1a1a-46d4-827a-732616fd2dfb
+curl --verbose -X PUT -H "Content-Type: application/json" -d '{"availability": {"1": 3, "2": 3,"3": 3},"name": "John","comment": "today is best", "user_id": 1}' http://localhost:8080/attendance/7284c5cf-80de-45b0-a58c-671f30e040d6
 
 
 # get event info
-curl --verbose -X GET http://localhost:8080/attendance/cf90bdf7-2c51-46a4-b878-dc2ac68abade
+curl --verbose -X GET http://localhost:8080/attendance/e4743fa0-beb2-4cf3-9eb5-8c68e68bd88c
+
+curl --verbose -X GET http://localhost:8080/event/basic/1a7cbd7e-aead-4252-be05-8a0d3819294a
