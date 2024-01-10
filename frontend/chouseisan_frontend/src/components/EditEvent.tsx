@@ -131,6 +131,8 @@ export default function EditEvent() {
       .get(`/event/timeslots/${input}`)
       .then((response) => {
         setDateList(response.data.timeslots);
+        setTitle(response.data.title);
+        console.log(response.data);
         //title, detail are not completed
       })
       .catch((error) => {
@@ -163,6 +165,7 @@ export default function EditEvent() {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
+    navigate(`/view_event/${params.eventId}`);
   };
   const deleteEvent = () => {
     axios
@@ -206,6 +209,8 @@ export default function EditEvent() {
                   <TextField
                     fullWidth
                     helperText="Team Dinner Party”, “Project Meeting”, etc..."
+                    value={title}
+                    required
                     onChange={(e) => setTitle(e.target.value)}
                   ></TextField>
                 </TableCell>
@@ -219,6 +224,7 @@ export default function EditEvent() {
                     multiline
                     rows={3}
                     helperText="*Let’s schedule the party! Please respond by ___"
+                    value={detail}
                     onChange={(e) => setDetail(e.target.value)}
                   ></TextField>
                 </TableCell>
