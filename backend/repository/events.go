@@ -77,3 +77,11 @@ func (repo Repository) UpdateEventTitleDetail(eventID string, title string, deta
 	}
 	return nil
 }
+
+func (repo Repository) UpdateEventDue(eventID string, due string) error {
+	if err := repo.db.Model(&Event{}).Where("event_id = ?", eventID).Updates(Event{DueEdit: due}).Error; err != nil {
+		log.Println("Gorm Error:", err)
+		return err
+	}
+	return nil
+}

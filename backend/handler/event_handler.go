@@ -3,6 +3,7 @@ package handler
 
 import (
 	"chouseisan/repository"
+	"chouseisan/service"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 type EventRequest struct {
 	Title            string `json:"title"`
 	Detail           string `json:"detail"`
+	DueEdit          string `json:"due_edit"`
 	DateTimeProposal string `json:"dateTimeProposal"`
 }
 
@@ -76,7 +78,7 @@ func (h *EventHandler) CreateEventHandler(c *gin.Context) {
 	proposals = filterNotEmpty(proposals)
 
 	// Store new information in DB
-	eventID, hostToken, err := h.Repo.CreateEvent(eventRequest.Title, eventRequest.Detail, proposals)
+	eventID, hostToken, err := h.Repo.CreateEvent(eventRequest.Title, eventRequest.Detail, eventRequest.DueEdit, proposals)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"CreateEventHandler error": "Failed to create event"})
 		return
@@ -169,6 +171,49 @@ func (h *EventHandler) EditTitleDetailHandler(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully modified event title and detail"})
+}
+
+func (h *EventHandler) EditDueHandler(c *gin.Context) {
+	eventID := c.Param("eventID")
+
+	// check cookie for host token
+	tokenString, err := c.Cookie(eventID)
+	if err != nil {
+		log.Println(err)
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "permission denied, you are not the host of the event"})
+		return
+	}
+
+	// get event info
+	event, err := h.Repo.GetEventByID(eventID)
+	if err != nil {
+		log.Println(err)
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Event Not Found."})
+		return
+	}
+
+	// check if the user is the host of the event
+
+	if tokenString != event.HostToken {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "permission denied, you are not the host of the event"})
+		return
+	}
+
+	// get request body
+	var eventRequest EventRequest
+	if err := c.ShouldBindJSON(&eventRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		return
+	}
+
+	// edit event
+	if err := h.Repo.UpdateEventDue(eventID, eventRequest.DueEdit); err != nil {
+		log.Println(err)
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Error editing edit due."})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully modified event due"})
 }
 
 func (h *EventHandler) GetTimeslotsHandler(c *gin.Context) {
@@ -360,18 +405,44 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Successfully stored preferences"})
 }
 
-func createEventForm(users []repository.EventUser, timeslots []repository.EventTimeslot, userAvailability map[uint]map[uint]uint) EventForm {
+func createEventForm(users []repository.EventUser, timeslots []repository.EventTimeslot, userAvailability map[uint]map[uint]uint, maxList, minList, optimalList []uint) EventForm {
 	//Create ScheduleList from EventTimeslot
 	scheduleList := make([]Schedule, len(timeslots))
+	annotationMap := make(map[uint](uint))
+	for _, item := range maxList {
+		annotationMap[item] = 1
+	}
+	for _, item := range minList {
+		annotationMap[item] = 2
+	}
+	for _, item := range optimalList {
+		annotationMap[item] = 3
+	}
 	timeslotIDToIndex := make(map[uint]int)
 	for i, timeslot := range timeslots {
+		annotation, ok := annotationMap[timeslot.ID]
+		if !ok {
+			annotation = 0
+		}
+		// Iterate over the slice and check if the element exists
 		scheduleList[i] = Schedule{
 			Name:       timeslot.Description,
 			ID:         timeslot.ID,
-			Annotation: 0, // Set this accordingly
+			Annotation: annotation, // Set this accordingly
 		}
 		timeslotIDToIndex[timeslot.ID] = i
 	}
+
+	// //edit annotation
+	// for _, timeslot := range maxList {
+	// 	scheduleList[timeslot].Annotation = 1
+	// }
+	// for _, timeslot := range minList {
+	// 	scheduleList[timeslot].Annotation = 2
+	// }
+	// for _, timeslot := range optimalList {
+	// 	scheduleList[timeslot].Annotation = 3
+	// }
 
 	// Create patricipants
 
@@ -403,6 +474,12 @@ func createEventForm(users []repository.EventUser, timeslots []repository.EventT
 func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
 	eventID := c.Param("eventID")
 
+	event, event_err := h.Repo.GetEventByID(eventID)
+	if event_err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error obtaining event"})
+		return
+	}
+
 	// get list of users
 	eventUsers, users_err := h.Repo.GetUsersByEventID(eventID)
 	if users_err != nil {
@@ -422,13 +499,18 @@ func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
 		return
 	}
 
-	eventForm := createEventForm(eventUsers, eventTimeslots, preferences)
+	// m
+
+	// find optimal ones
+	maxList, minList, optimalList := service.FindOptimals(preferences, len(eventUsers))
+
+	eventForm := createEventForm(eventUsers, eventTimeslots, preferences, maxList, minList, optimalList)
 
 	// c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully got all preferences",
 	// 	"userAvailability": preferences,
 	// 	"users":            eventUsers,
 	// 	"timeslots":        eventTimeslots})
-	c.IndentedJSON(http.StatusOK, eventForm)
+	c.IndentedJSON(http.StatusOK, gin.H{"scheduleList": eventForm.ScheduleList, "participants": eventForm.Participants, "due_edit": event.DueEdit})
 }
 
 func (h *EventHandler) GetEventBasicHandler(c *gin.Context) {

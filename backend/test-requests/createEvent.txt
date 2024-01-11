@@ -1,5 +1,6 @@
 # creating event
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"title":"test event", "detail":"test", "dateTimeProposal":"a\nb\nc"}' http://localhost:8080/createEvent
+eventID=a85b533a-bd85-490c-a785-0d539f58bbac
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"title":"test event", "detail":"test", "due_edit":"2024/5/30", "dateTimeProposal":"a\nb\nc"}' http://localhost:8080/createEvent
 -> uuidが帰ってくる．
 
 # deleting an event
@@ -44,9 +45,9 @@ curl --verbose -X GET -b "daf4a17a-1b69-445b-910d-488c3ddb70f9=40060f3b-be6d-430
 # add attendance for an event
 curl --verbose -X POST 
 
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best", "email": "a@yakiniku.com"}' http://localhost:8080/attendance/2316b9ae-5229-4733-8fe5-7d7ba2026b6f
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best", "email": "a@yakiniku.com"}' http://localhost:8080/attendance/8fe49b30-70b5-4c8e-8a0e-6a35da55dd8f
 
-curl --verbose -X GET  http://localhost:8080/attendance/7284c5cf-80de-45b0-a58c-671f30e040d6
+curl --verbose -X GET  http://localhost:8080/attendance/8fe49b30-70b5-4c8e-8a0e-6a35da55dd8f
 
 curl --verbose -X GET  http://localhost:8080/event/b7c9783c-d010-462b-9d09-6d1037b974e9
 
@@ -61,3 +62,7 @@ curl --verbose -X PUT -H "Content-Type: application/json" -d '{"availability": {
 curl --verbose -X GET http://localhost:8080/attendance/e4743fa0-beb2-4cf3-9eb5-8c68e68bd88c
 
 curl --verbose -X GET http://localhost:8080/event/basic/1a7cbd7e-aead-4252-be05-8a0d3819294a
+
+
+# edit due dateTimeProposal
+curl --verbose -X PUT -H "Content-Type: application/json" -b "2495774d-69fb-4ddd-b410-09f3fdb90e37=5c17a2e1-e139-4a40-85cb-73381ec43ae2" -d '{"due_edit": "1/1"}' http://localhost:8080/event/editDue/2495774d-69fb-4ddd-b410-09f3fdb90e37

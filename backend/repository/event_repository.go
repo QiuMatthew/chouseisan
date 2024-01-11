@@ -10,7 +10,7 @@ import (
 // Define methods for reading data from the database
 
 // CreateEventInDB creates a new event in the database
-func (repo Repository) CreateEvent(title, detail string, proposals []string) (string, string, error) {
+func (repo Repository) CreateEvent(title, detail string, due_edit string, proposals []string) (string, string, error) {
 	// issue new event id and hostToken (both are uuid)
 	newEventID := uuid.New().String()
 	hostToken := uuid.New().String()
@@ -20,6 +20,7 @@ func (repo Repository) CreateEvent(title, detail string, proposals []string) (st
 		EventID:   newEventID,
 		Title:     title,
 		Detail:    detail,
+		DueEdit:   due_edit,
 		HostToken: hostToken,
 	}
 
