@@ -1,60 +1,17 @@
-import React, { useState, ChangeEvent, FormEvent, useContext } from "react";
-import {
-  Routes,
-  Route,
-  Link,
-  useNavigate,
-  useLocation,
-} from "react-router-dom";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import {
-  Stack,
-  TextField,
-  FormControl,
-  Button,
-  FormHelperText,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Alert,
-  Snackbar,
-  Grid,
-  Autocomplete,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Box,
-} from "@mui/material";
+import React, { useState, FormEvent, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Box } from "@mui/material";
 import dayjs from "dayjs";
-import {
-  useForm,
-  SubmitHandler,
-  Controller,
-  useFieldArray,
-  FormProvider,
-} from "react-hook-form";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import HelpIcon from "@mui/icons-material/Help";
 import "./InputForm.css";
 import topIcon from "../images/top.png";
 import FlagIcon from "@mui/icons-material/Flag";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar, DateTimePicker } from "@mui/x-date-pickers";
-import * as timezone from "dayjs/plugin/timezone";
 import axios from "../utils/axios";
 import { SelfEventContext } from "../contexts/EventBySelf";
-// type CustomLocation = {
-//   state: { from: { pathname: string } };
-// };
 
 export default function InputForm() {
   const japanTime = dayjs();
@@ -65,10 +22,7 @@ export default function InputForm() {
   const [expiration, setExpiration] = useState(
     dayjs(japanTime).add(7, "day").toString()
   );
-  const [uuid, setUuid] = useState("");
   const navigate = useNavigate();
-  const utc = require("dayjs/plugin/utc");
-  const timezone = require("dayjs/plugin/timezone");
 
   const eventSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -98,7 +52,6 @@ export default function InputForm() {
         console.log("ERROR connecting backend service");
       });
   };
-  // console.log(dayjs.unix(1699255903).format("YYYY-MM-DD HH:mm:ss"));
   return (
     <>
       <Box sx={{ backgroundColor: "#6dd643", height: 350, marginBottom: 0 }}>
@@ -109,7 +62,7 @@ export default function InputForm() {
             position: "relative",
           }}
         >
-          <img src={topIcon} height="auto" width={"100%"} />
+          <img src={topIcon} height="auto" width={"100%"} alt="topicon" />
           <div
             style={{
               left: 20,

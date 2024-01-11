@@ -1,86 +1,9 @@
 import axios from "../utils/axios";
-import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useContext,
-} from "react";
-import {
-  Routes,
-  Route,
-  Link as Link2,
-  useNavigate,
-  useLocation,
-  useParams,
-} from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
-import {
-  Stack,
-  TextField,
-  FormControl,
-  Button,
-  FormHelperText,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Alert,
-  Snackbar,
-  Grid,
-  Autocomplete,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Box,
-  Link,
-  Tab,
-  Divider,
-  Theme,
-  createStyles,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  ButtonGroup,
-  Typography,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Button, Grid, Link, ListItem, ListItemText } from "@mui/material";
 
-import dayjs from "dayjs";
-import {
-  useForm,
-  SubmitHandler,
-  Controller,
-  useFieldArray,
-  FormProvider,
-} from "react-hook-form";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import HelpIcon from "@mui/icons-material/Help";
-import { makeStyles } from "@mui/material";
-import topIcon from "../images/top.png";
-import FlagIcon from "@mui/icons-material/Flag";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateCalendar } from "@mui/x-date-pickers";
-import * as timezone from "dayjs/plugin/timezone";
-import {
-  DataGrid,
-  GridRowsProp,
-  GridColDef,
-  GridRenderCellParams,
-  GridClasses,
-} from "@mui/x-data-grid";
-import DateProposalGrid from "./DateProposalGrid";
-import { authAxios } from "../utils/axios";
-import { timeslots } from "../types/Event";
-import Nonexist from "./Nonexist";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
 
 import "./History.css";
@@ -91,7 +14,7 @@ export default function History() {
   const navigate = useNavigate();
   console.log(historyEvent);
   useEffect(() => {
-    historyEvent.map((value, index) => {
+    historyEvent.forEach((value, index) => {
       axios
         .get(`/event/timeslots/${value}`)
         .then((response) => {

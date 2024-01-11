@@ -1,25 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Box, Button, Link } from "@mui/material";
 import "./ViewEvent.css";
-import FlagIcon from "@mui/icons-material/Flag";
-import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import DateProposalGrid from "./DateProposalGrid";
-import noIcon from "../images/no.png";
 import { useParams } from "react-router-dom";
 import axios from "../utils/axios";
 import Nonexist from "./Nonexist";
 import { SelfEventContext } from "../contexts/EventBySelf";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
-import { InputSharp } from "@mui/icons-material";
 
 export default function ViewEvent() {
   const { selfEventList, setSelfEventList } = useContext(SelfEventContext);
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
-  const event = {
-    eventName: "meeting",
-    eventDetail: "123",
-    respondents: 2,
-  };
+
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [no, setNo] = useState(0);
@@ -39,15 +31,15 @@ export default function ViewEvent() {
     axios
       .get(`/event/exist/${input}`)
       .then((response) => {
-        if (response.data.message === "Event Found.") setIsExisted(true);
-        console.log(response.data.message);
+        if (response.data.message === "Event Found.") {
+          setIsExisted(true);
+        }
       })
       .catch((error) => {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
   });
-  console.log(selfEventList);
   React.useEffect(() => {
     setHistoryEvent((historyEvent) => {
       if (historyEvent.includes(input)) return historyEvent;

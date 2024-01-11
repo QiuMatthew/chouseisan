@@ -1,36 +1,21 @@
-import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useContext,
-} from "react";
+import { useState, useEffect, useContext } from "react";
 
-import {
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  Grid,
-  Link,
-  ListItemIcon,
-} from "@mui/material";
+import { ListItem, ListItemText, Button, Grid, Link } from "@mui/material";
 import "./HistorySimpler.css";
 import axios from "../utils/axios";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export default function HistorySimpler() {
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
   const [title, setTitle] = useState<string[]>([]);
   const [timeslotList, setTimeslotsList] = useState<string[][]>([]);
   const navigate = useNavigate();
   useEffect(() => {
-    historyEvent.map((value, index) => {
+    historyEvent.forEach((value) => {
       axios
         .get(`/event/timeslots/${value}`)
         .then((response) => {
-          console.log(response.data);
           setTitle((title) => {
             if (title.includes(response.data.title)) return title;
             else return [...title, response.data.title];
@@ -67,10 +52,6 @@ export default function HistorySimpler() {
     alignItems: "center",
     justifyContent: "center",
   };
-  const dates: number[] = [1, 2, 3, 4, 5, 6];
-  // 计算行数和列数
-  const rows = Math.ceil(timeslotList.length / 3);
-  const cols = Math.min(timeslotList.length, 3);
   // localStorage.clear();
   return (
     <div className="bg">
@@ -82,8 +63,6 @@ export default function HistorySimpler() {
       </div>
       <div className="history-card">
         {title.slice(0, 2).map((value, index) => {
-          // console.log(timeslotList);
-          // console.log(title);
           return (
             <Button
               className="history-item"
@@ -94,7 +73,6 @@ export default function HistorySimpler() {
               }}
               variant="outlined"
               onClick={() => {
-                console.log("clicked");
                 navigate(`view_event/${historyEvent[index].replace(/-/g, "")}`);
               }}
             >

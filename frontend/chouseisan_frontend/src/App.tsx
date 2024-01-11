@@ -1,51 +1,21 @@
 import "./App.css";
-import * as React from "react";
 import "./App.css";
-import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  Routes,
-  Route,
-  Link,
-  Navigate,
-  useLocation,
-  useParams,
-} from "react-router-dom";
-import { useContext } from "react";
+import { Link } from "react-router-dom";
 import RouteSetting from "./utils/RouteSetting";
 import HistorySimpler from "./components/HistorySimpler";
-import {
-  Alert,
-  AppBar,
-  Backdrop,
-  Button,
-  CircularProgress,
-  Container,
-  Snackbar,
-} from "@mui/material";
-import LoginIcon from "@mui/icons-material/Login";
-import LogoutIcon from "@mui/icons-material/Logout";
+import { AppBar, Button } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import logoIcon from "./images/chousei_logo.png";
 export default function App() {
   const location = window.location.href.split("/").pop();
-  console.log(location);
   return (
     <>
       <Box
         sx={{
           display: "flex",
-          // position: "relative",
         }}
       >
         <CssBaseline />
@@ -61,7 +31,6 @@ export default function App() {
             </Link>
             <Box
               sx={{
-                // color: "white",
                 fontSize: 14,
                 fontWeight: "bolder",
                 fontFamily: "sans-serif",
@@ -97,8 +66,6 @@ export default function App() {
               </p>
               <Button
                 variant="contained"
-                // size="small"
-                // color="#f29700"
                 sx={{
                   color: "#fff",
                   textAlign: "center",
@@ -108,7 +75,6 @@ export default function App() {
               </Button>
               <Button
                 sx={{
-                  // backgroundColor: "#ffffff",
                   borderRadius: 3,
                   color: "#34a21a",
                   textAlign: "center",
@@ -123,12 +89,9 @@ export default function App() {
             </div>
           </Toolbar>
         </AppBar>
-        {/* <Routes>
-          <Route path="/" element={<InputForm />} />
-        </Routes> */}
       </Box>
       <RouteSetting />
-      {location != "history" && <HistorySimpler />}
+      {location !== "history" && <HistorySimpler />}
     </>
   );
 }

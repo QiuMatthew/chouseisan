@@ -1,11 +1,11 @@
-import { Route, Routes, Link, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import InputForm from "../components/InputForm";
 import CreateComplete from "../components/CreateComplete";
 import ViewEvent from "../components/ViewEvent";
 import History from "../components/History";
 
 import EditEvent from "../components/EditEvent";
-import App from "../App";
+
 export default function RouteSetting() {
   return (
     <>

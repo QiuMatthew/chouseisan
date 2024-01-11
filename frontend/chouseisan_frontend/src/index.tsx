@@ -3,13 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import InputForm from "./components/InputForm";
 import { BrowserRouter } from "react-router-dom";
 import { Box } from "@mui/material";
-import CreateComplete from "./components/CreateComplete";
-import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
-import RouteSetting from "./utils/RouteSetting";
-import HistorySimpler from "./components/HistorySimpler";
 import SelfEventListProvider from "./contexts/EventBySelf";
 import HistoryEventProvider from "./contexts/HistoryEvent";
 const root = ReactDOM.createRoot(

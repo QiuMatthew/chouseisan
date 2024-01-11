@@ -1,47 +1,30 @@
-import React, { useRef, useState, forwardRef, useEffect } from "react";
-import { EventNote, NoiseAware, SetMeal } from "@mui/icons-material";
+import React, { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Link,
-  IconButton,
-  Icon,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
 import {
   DataGrid,
-  GridRowsProp,
   GridColDef,
   GridColumnHeaderParams,
   GridRenderCellParams,
 } from "@mui/x-data-grid";
-import yesIcon from "../images/yes.png";
 import noIcon from "../images/no.png";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CheckIcon from "@mui/icons-material/Check";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import ClearIcon from "@mui/icons-material/Clear";
-import unknownIcon from "../images/unknown.png";
 // import axios from "../utils/axios";
 import "./DateProposalGrid.css";
 import axios from "../utils/axios";
 
-import {
-  event,
-  proposal,
-  addAttendence,
-  schedule,
-  nameId,
-} from "../types/Event";
+import { event, addAttendence, nameId } from "../types/Event";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { click } from "@testing-library/user-event/dist/click";
 import dayjs from "dayjs";
 
-interface MyObject {
-  [key: string]: JSX.Element;
-}
 interface rowData {
   id: number;
   Schedule: string;
@@ -51,11 +34,10 @@ interface rowData {
   annotation: number;
 }
 
-export default function (props: any) {
+export default function DateProposalGrid(props: any) {
   const japanTime = dayjs();
   const [rows, setRows] = useState<rowData[]>([]);
   const [columns, setColumns] = useState<GridColDef[]>([]);
-  const [selected, setSelected] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [idList, setIdList] = useState<number[]>([]);
   const [nameList, setNameList] = useState<nameId>({});
@@ -63,12 +45,6 @@ export default function (props: any) {
   const navigate = useNavigate();
   const params = useParams();
   const [expiration, setExpiration] = useState("");
-  const handleSelection = (
-    event: React.MouseEvent<HTMLElement>,
-    newSelection: number | null
-  ) => {
-    setSelected(newSelection);
-  };
   let formMethods = useForm<addAttendence>({
     mode: "onChange",
     defaultValues: { result: [] },
@@ -76,10 +52,7 @@ export default function (props: any) {
   const {
     register,
     handleSubmit,
-    setValue,
     control,
-    getValues,
-    trigger,
     reset,
     formState: { errors },
   } = formMethods;
@@ -91,7 +64,6 @@ export default function (props: any) {
     axios
       .get(`/attendance/${props.uuid}`)
       .then((response) => {
-        console.log(response.data);
         setExpiration(response.data.due_edit);
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
@@ -118,7 +90,6 @@ export default function (props: any) {
           user_id: nameList[data.name],
         })
         .then(function (response) {
-          console.log(response);
           navigate(`/view_event/${params.eventId}`);
           window.location.reload();
         })
@@ -134,7 +105,6 @@ export default function (props: any) {
           email: data.email,
         })
         .then(function (response) {
-          console.log(response);
           navigate(`/view_event/${params.eventId}`);
           window.location.reload();
         })
@@ -145,14 +115,14 @@ export default function (props: any) {
   };
   const generateRows = (eventObject: event) => {
     let rows: rowData[] = [];
-    eventObject.scheduleList.map((schedule, index) => {
+    eventObject.scheduleList.forEach((schedule, index) => {
       setIdList((idList) => {
         if (idList.includes(schedule.id)) return [...idList];
         else return [...idList, schedule.id];
       });
 
       let [yesNum, unknownNum, noNum] = [0, 0, 0];
-      eventObject.participants.map((obj) => {
+      eventObject.participants.forEach((obj) => {
         if (obj.result[index] === 1) {
           yesNum += 1;
         } else if (obj.result[index] === 2) {
@@ -229,18 +199,10 @@ export default function (props: any) {
       }
     };
 
-    eventObject.participants.map((obj) => {
+    eventObject.participants.forEach((obj) => {
       setNameList((nameList) => {
         if (Object.keys(nameList).includes(obj.name)) return { ...nameList };
         else return { ...nameList, [obj.name]: obj.user_id };
-      });
-      //处理列
-      const imgList: string[] = [];
-      let objectPosition = "";
-      obj.result.map((num) => {
-        if (num === 1) objectPosition = "0";
-        else if (num === 2) objectPosition = "52%";
-        else if (num === 3) objectPosition = "102%";
       });
 
       columns.push({
@@ -280,6 +242,7 @@ export default function (props: any) {
           else
             return (
               <img
+                alt="noIcon"
                 src={noIcon}
                 style={{
                   height: 25,
@@ -417,7 +380,6 @@ export default function (props: any) {
                   control={control}
                   {...register(`result.${index}`, {
                     validate: (value) => {
-                      console.log(value);
                       if (!value) return "please select";
                       else return true;
                     },

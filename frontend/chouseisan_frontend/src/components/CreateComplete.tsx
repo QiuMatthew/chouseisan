@@ -1,35 +1,11 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
-import { Link, Location, useLocation, useParams } from "react-router-dom";
-import {
-  Stack,
-  TextField,
-  FormControl,
-  Button,
-  FormHelperText,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Alert,
-  Snackbar,
-  Grid,
-  Autocomplete,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Box,
-} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { TextField, Button } from "@mui/material";
 import "./CreateComplete.css";
 import axios from "../utils/axios";
 import Nonexist from "./Nonexist";
-interface NextPageParams {
-  uuid: string;
-}
+
 export default function CreateComplete() {
-  const location = useLocation();
   const params = useParams();
   const [isExisted, setIsExisted] = useState(true);
   const textUrl =
@@ -56,7 +32,7 @@ export default function CreateComplete() {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
-  }, []);
+  });
 
   return (
     <>

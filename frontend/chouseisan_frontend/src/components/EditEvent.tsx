@@ -1,39 +1,17 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import {
-  Routes,
-  Route,
-  Link as Link2,
-  useNavigate,
-  useLocation,
-  useParams,
-} from "react-router-dom";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  Stack,
   TextField,
-  FormControl,
   Button,
-  FormHelperText,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
-  Alert,
-  Snackbar,
-  Grid,
-  Autocomplete,
-  CircularProgress,
   IconButton,
-  Tooltip,
-  Box,
   Link,
-  Tab,
-  Divider,
-  Theme,
-  createStyles,
   List,
   ListItem,
   ListItemText,
@@ -44,58 +22,29 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import dayjs from "dayjs";
-import {
-  useForm,
-  SubmitHandler,
-  Controller,
-  useFieldArray,
-  FormProvider,
-} from "react-hook-form";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import HelpIcon from "@mui/icons-material/Help";
 import "./InputForm.css";
 import "./EditEvent.css";
-import { makeStyles } from "@mui/material";
-import topIcon from "../images/top.png";
-import FlagIcon from "@mui/icons-material/Flag";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar, DateTimePicker } from "@mui/x-date-pickers";
-import * as timezone from "dayjs/plugin/timezone";
 import axios from "../utils/axios";
-import {
-  DataGrid,
-  GridRowsProp,
-  GridColDef,
-  GridRenderCellParams,
-  GridClasses,
-} from "@mui/x-data-grid";
-import DateProposalGrid from "./DateProposalGrid";
-import { authAxios } from "../utils/axios";
 import { timeslots } from "../types/Event";
 import Nonexist from "./Nonexist";
 
 export default function EditEvent() {
-  const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
-  const [no, setNo] = useState(0);
   const [clicked, setClicked] = useState(false);
   const japanTime = dayjs();
   const [dateList, setDateList] = useState<timeslots>({});
   const [deletedDates, setDeletedDates] = useState<number[]>([]);
   const [newList, setNewList] = useState("");
   const navigate = useNavigate();
-  const [addDate, setAddDate] = useState("");
   const [isExisted, setIsExisted] = useState(true);
   const [expiration, setExpiration] = useState(
     dayjs(japanTime).add(7, "day").toString()
   );
-  let addDate2 = "";
-  const utc = require("dayjs/plugin/utc");
   const leftCellStyle = {
     fontSize: "16px",
     fontWeight: "bold",
@@ -127,15 +76,12 @@ export default function EditEvent() {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
-  }, []);
-  useEffect(() => {
     axios
       .get(`/event/timeslots/${input}`)
       .then((response) => {
         setDateList(response.data.timeslots);
         setTitle(response.data.title);
         setDetail(response.data.detail);
-        console.log(response.data);
         //title, detail are not completed
       })
       .catch((error) => {
@@ -143,6 +89,7 @@ export default function EditEvent() {
         console.log("ERROR connecting backend service");
       });
   }, []);
+
   const eventEdit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (deletedDates.length > 0) {
@@ -167,14 +114,12 @@ export default function EditEvent() {
         detail: detail,
         due_edit: expiration,
       })
-      .then((response) => {
-        console.log(expiration);
-      })
+      .then((response) => {})
       .catch((error) => {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
-    // navigate(`/view_event/${params.eventId}`);
+    navigate(`/view_event/${params.eventId}`);
   };
   const deleteEvent = () => {
     axios
@@ -248,7 +193,6 @@ export default function EditEvent() {
                         disablePast
                         onChange={(date) => {
                           const origin = date!.toString();
-                          console.log("saasdasd" + origin);
                           setExpiration((expiration) => origin);
                         }}
                       />
