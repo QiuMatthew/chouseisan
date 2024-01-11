@@ -37,6 +37,7 @@ import {
 } from "../types/Event";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { click } from "@testing-library/user-event/dist/click";
+import dayjs from "dayjs";
 
 interface MyObject {
   [key: string]: JSX.Element;
@@ -50,19 +51,17 @@ interface rowData {
 }
 
 export default function (props: any) {
+  const japanTime = dayjs();
   const [rows, setRows] = useState<rowData[]>([]);
   const [columns, setColumns] = useState<GridColDef[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [name, setName] = useState("");
-  const [comment, setComment] = useState("");
-  const [email, setEmail] = useState("");
   const [idList, setIdList] = useState<number[]>([]);
   const [nameList, setNameList] = useState<nameId>({});
   const [schedule, setSchedule] = useState([0]);
-  const [textFieldValue, setTextFieldValue] = useState("");
   const navigate = useNavigate();
   const params = useParams();
+  const [expiration, setExpiration] = useState("");
   const handleSelection = (
     event: React.MouseEvent<HTMLElement>,
     newSelection: number | null
@@ -92,6 +91,7 @@ export default function (props: any) {
       .get(`/attendance/${props.uuid}`)
       .then((response) => {
         console.log(response.data);
+        setExpiration(response.data.due_edit);
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
         setSchedule(Array(response.data.scheduleList.length).fill(undefined));
@@ -130,6 +130,7 @@ export default function (props: any) {
           name: data.name,
           availability: getAvailability(data.result, idList),
           comment: data.comment,
+          email: data.email
         })
         .then(function (response) {
           console.log(response);
@@ -296,6 +297,9 @@ export default function (props: any) {
 
   return (
     <>
+      {japanTime.isAfter(expiration) && (
+        <p style={{ color: "red" }}>This event is over now.</p>
+      )}
       <div
         style={{
           display: "flex",
@@ -344,6 +348,7 @@ export default function (props: any) {
           <Button
             className="btn-add"
             variant="contained"
+            disabled={japanTime.isAfter(expiration)}
             sx={{
               width: 170,
               height: 170,

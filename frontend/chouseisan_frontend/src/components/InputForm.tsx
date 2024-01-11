@@ -57,17 +57,19 @@ import { SelfEventContext } from "../contexts/EventBySelf";
 // };
 
 export default function InputForm() {
+  const japanTime = dayjs();
   const [dateList, setDateList] = React.useState("");
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const { selfEventList, setSelfEventList } = useContext(SelfEventContext);
-  const [expiration, setExpiration] = useState("");
+  const [expiration, setExpiration] = useState(
+    dayjs(japanTime).add(7, "day").toString()
+  );
   const [uuid, setUuid] = useState("");
   const navigate = useNavigate();
   const utc = require("dayjs/plugin/utc");
   const timezone = require("dayjs/plugin/timezone");
 
-  const japanTime = dayjs();
   const eventSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
@@ -78,6 +80,7 @@ export default function InputForm() {
           title: title,
           detail: detail,
           dateTimeProposal: dateList,
+          due_edit: expiration,
         },
 
         {
@@ -211,7 +214,7 @@ export default function InputForm() {
                       label="expiration date picker"
                       disablePast
                       onChange={(date) => {
-                        const origin = date!.add(9, "hour").toString();
+                        const origin = date!.toString();
                         console.log("saasdasd" + origin);
                         setExpiration((expiration) => origin);
                       }}

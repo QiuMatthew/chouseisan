@@ -63,7 +63,7 @@ import FlagIcon from "@mui/icons-material/Flag";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateCalendar } from "@mui/x-date-pickers";
+import { DateCalendar, DateTimePicker } from "@mui/x-date-pickers";
 import * as timezone from "dayjs/plugin/timezone";
 import axios from "../utils/axios";
 import {
@@ -91,7 +91,9 @@ export default function EditEvent() {
   const navigate = useNavigate();
   const [addDate, setAddDate] = useState("");
   const [isExisted, setIsExisted] = useState(true);
-
+  const [expiration, setExpiration] = useState(
+    dayjs(japanTime).add(7, "day").toString()
+  );
   let addDate2 = "";
   const utc = require("dayjs/plugin/utc");
   const leftCellStyle = {
@@ -160,7 +162,11 @@ export default function EditEvent() {
         console.log("ERROR connecting backend service");
       });
     axios
-      .put(`/event/editTitleDetail/${input}`, { title: title, detail: detail })
+      .put(`/event/editTitleDetail/${input}`, {
+        title: title,
+        detail: detail,
+        due_edit: expiration,
+      })
       .then((response) => {})
       .catch((error) => {
         console.log(error);
@@ -227,6 +233,25 @@ export default function EditEvent() {
                     value={detail}
                     onChange={(e) => setDetail(e.target.value)}
                   ></TextField>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell style={leftCellStyle}>Expiration date</TableCell>
+                <TableCell style={rightCellStyle}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateTimePicker"]}>
+                      <DateTimePicker
+                        defaultValue={dayjs(japanTime).add(7, "day")}
+                        label="expiration date picker"
+                        disablePast
+                        onChange={(date) => {
+                          const origin = date!.toString();
+                          console.log("saasdasd" + origin);
+                          setExpiration((expiration) => origin);
+                        }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
                 </TableCell>
               </TableRow>
               <TableRow>
