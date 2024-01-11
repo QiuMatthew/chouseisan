@@ -6,7 +6,7 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
-
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   Stack,
   TextField,
@@ -46,8 +46,9 @@ import topIcon from "../images/top.png";
 import FlagIcon from "@mui/icons-material/Flag";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateCalendar } from "@mui/x-date-pickers";
+import { DateCalendar, DateTimePicker } from "@mui/x-date-pickers";
 import * as timezone from "dayjs/plugin/timezone";
 import axios from "../utils/axios";
 import { SelfEventContext } from "../contexts/EventBySelf";
@@ -60,6 +61,7 @@ export default function InputForm() {
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const { selfEventList, setSelfEventList } = useContext(SelfEventContext);
+  const [expiration, setExpiration] = useState("");
   const [uuid, setUuid] = useState("");
   const navigate = useNavigate();
   const utc = require("dayjs/plugin/utc");
@@ -86,7 +88,7 @@ export default function InputForm() {
       .then(function (response) {
         let uuid = response.data.event_id.replace(/-/g, "");
         setSelfEventList((selfEventList) => [...selfEventList, uuid]);
-        
+
         navigate(`/create_complete/${uuid}`);
       })
       .catch(function (response) {
@@ -125,7 +127,7 @@ export default function InputForm() {
       <Box
         sx={{
           backgroundColor: "#eaf4e5",
-          height: 600,
+          minheight: 1000,
         }}
       >
         <form className="container" onSubmit={eventSubmit}>
@@ -161,7 +163,7 @@ export default function InputForm() {
                   label="Detail"
                   multiline
                   fullWidth
-                  rows={6}
+                  rows={16}
                   inputProps={{ style: { padding: 0 } }}
                   onChange={(e) => setDetail(e.target.value)}
                 ></TextField>
@@ -182,6 +184,7 @@ export default function InputForm() {
                 </p>
 
                 <TextField
+                  sx={{ marginBottom: "20px" }}
                   size="small"
                   multiline
                   fullWidth
@@ -194,6 +197,27 @@ export default function InputForm() {
                   value={dateList}
                   placeholder="Simply input your proposals in the Month DD(DAY) TIME format. Or you can click on the specific date(s) in the calendar."
                 ></TextField>
+                <p className="item-title">Expiration date</p>
+                <p className="item-description">
+                  Select the expiration date that you want to close this event.
+                  <br></br>
+                  Please notice users cannot add attendance on this event from
+                  that date.
+                </p>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DateTimePicker
+                      defaultValue={dayjs(japanTime).add(7, "day")}
+                      label="expiration date picker"
+                      disablePast
+                      onChange={(date) => {
+                        const origin = date!.add(9, "hour").toString();
+                        console.log("saasdasd" + origin);
+                        setExpiration((expiration) => origin);
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
               </div>
             </div>
             <div className="box3">

@@ -358,7 +358,7 @@ export default function (props: any) {
               setShowAddForm((showAddForm) => true);
             }}
           >
-            Add Attendence
+            Add Attendance
           </Button>
         )}
         {showAddForm && (

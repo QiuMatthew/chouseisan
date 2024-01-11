@@ -2,6 +2,7 @@
   width: 970px;
   margin: 0 auto;
   position: relative;
+  min-height: 850px;
   /* justify-content: ; */
 }
 .form-header {
@@ -14,6 +15,7 @@
 .form {
   display: flex;
   justify-content: space-between;
+  /* min-height: 1000px; */
 }
 .form div {
   /* width: 100%; */
