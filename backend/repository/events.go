@@ -70,8 +70,8 @@ func (repo Repository) InsertEvent(newEvent Event) error {
 	return nil
 }
 
-func (repo Repository) UpdateEventTitleDetail(eventID string, title string, detail string) error {
-	if err := repo.db.Model(&Event{}).Where("event_id = ?", eventID).Updates(Event{Title: title, Detail: detail}).Error; err != nil {
+func (repo Repository) UpdateEventTitleDetail(eventID string, title string, detail string, due string) error {
+	if err := repo.db.Model(&Event{}).Where("event_id = ?", eventID).Updates(Event{Title: title, Detail: detail, DueEdit: due}).Error; err != nil {
 		log.Println("Gorm Error:", err)
 		return err
 	}
