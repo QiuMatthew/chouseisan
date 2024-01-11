@@ -13,4 +13,5 @@ RUN GOOS=linux GOARCH=amd64 go build -o /app/backend/serve
 
 # CMD [ "/app/backend/serve" ]
 CMD sh -c "sleep 10 && cat /app/backend/init.sql | mysql -hmysql -uuser -ppassword chouseisan && /app/backend/serve"
+#CMD sh -c "sleep 10 | mysql -hmysql -uuser -ppassword chouseisan && /app/backend/serve"
 

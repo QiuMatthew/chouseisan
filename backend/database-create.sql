@@ -41,6 +41,6 @@ CREATE TABLE event_user_timeslots (
 );
 -- ENGINE MEMORY;
 
-CREATE INDEX idx_event_id ON events(event_id);
-CREATE INDEX idx_event_id2 ON event_users(event_id);
-CREATE INDEX idx_event_id3 ON event_user_timeslots(event_id);
+-- CREATE INDEX idx_event_id USING HASH ON events(event_id);
+-- CREATE INDEX idx_event_id USING HASH ON event_users(event_id);
+-- CREATE INDEX idx_event_id USING HASH ON event_user_timeslots(event_id);

@@ -3,6 +3,7 @@ package handler
 
 import (
 	"chouseisan/repository"
+	"chouseisan/service"
 	"fmt"
 	"log"
 	"net/http"
@@ -360,18 +361,44 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Successfully stored preferences"})
 }
 
-func createEventForm(users []repository.EventUser, timeslots []repository.EventTimeslot, userAvailability map[uint]map[uint]uint) EventForm {
+func createEventForm(users []repository.EventUser, timeslots []repository.EventTimeslot, userAvailability map[uint]map[uint]uint, maxList, minList, optimalList []uint) EventForm {
 	//Create ScheduleList from EventTimeslot
 	scheduleList := make([]Schedule, len(timeslots))
+	annotationMap := make(map[uint](uint))
+	for _, item := range maxList {
+		annotationMap[item] = 1
+	}
+	for _, item := range minList {
+		annotationMap[item] = 2
+	}
+	for _, item := range optimalList {
+		annotationMap[item] = 3
+	}
 	timeslotIDToIndex := make(map[uint]int)
 	for i, timeslot := range timeslots {
+		annotation, ok := annotationMap[timeslot.ID]
+		if !ok {
+			annotation = 0
+		}
+		// Iterate over the slice and check if the element exists
 		scheduleList[i] = Schedule{
 			Name:       timeslot.Description,
 			ID:         timeslot.ID,
-			Annotation: 0, // Set this accordingly
+			Annotation: annotation, // Set this accordingly
 		}
 		timeslotIDToIndex[timeslot.ID] = i
 	}
+
+	// //edit annotation
+	// for _, timeslot := range maxList {
+	// 	scheduleList[timeslot].Annotation = 1
+	// }
+	// for _, timeslot := range minList {
+	// 	scheduleList[timeslot].Annotation = 2
+	// }
+	// for _, timeslot := range optimalList {
+	// 	scheduleList[timeslot].Annotation = 3
+	// }
 
 	// Create patricipants
 
@@ -422,7 +449,12 @@ func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
 		return
 	}
 
-	eventForm := createEventForm(eventUsers, eventTimeslots, preferences)
+	// m
+
+	// find optimal ones
+	maxList, minList, optimalList := service.FindOptimals(preferences, len(eventUsers))
+
+	eventForm := createEventForm(eventUsers, eventTimeslots, preferences, maxList, minList, optimalList)
 
 	// c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully got all preferences",
 	// 	"userAvailability": preferences,
