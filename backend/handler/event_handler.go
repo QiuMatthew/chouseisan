@@ -73,6 +73,7 @@ func (h *EventHandler) CreateEventHandler(c *gin.Context) {
 
 	// Split proposals by "\n"
 	proposals := strings.Split(eventRequest.DateTimeProposal, "\n")
+	proposals = filterNotEmpty(proposals)
 
 	// Store new information in DB
 	eventID, hostToken, err := h.Repo.CreateEvent(eventRequest.Title, eventRequest.Detail, proposals)
@@ -251,6 +252,16 @@ func (h *EventHandler) DeleteTimeslotsHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Successfully deleted some timeslots"})
 }
 
+func filterNotEmpty(slice []string) []string {
+	var filtered []string
+	for _, s := range slice {
+		if s != "" {
+			filtered = append(filtered, s)
+		}
+	}
+	return filtered
+}
+
 func (h *EventHandler) AddTimeslotsHandler(c *gin.Context) {
 	eventID := c.Param("eventID")
 	var eventRequest EventRequest
@@ -261,11 +272,16 @@ func (h *EventHandler) AddTimeslotsHandler(c *gin.Context) {
 
 	// Split proposals by "\n"
 	proposals := strings.Split(eventRequest.DateTimeProposal, "\n")
+	// remove empty string
+	proposals = filterNotEmpty(proposals)
 
-	err := h.Repo.InsertEventTimeslot(eventID, proposals)
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"AddTimeslotsHandler error": "Failed to add timeslots"})
-		return
+	// check lenght of proposals
+	if len(proposals) > 0 {
+		err := h.Repo.InsertEventTimeslot(eventID, proposals)
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"AddTimeslotsHandler error": "Failed to add timeslots"})
+			return
+		}
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{"event_id": eventID})
 }
