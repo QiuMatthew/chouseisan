@@ -164,7 +164,8 @@ func (h *EventHandler) EditTitleDetailHandler(c *gin.Context) {
 	}
 
 	// edit event
-	if err := h.Repo.UpdateEventTitleDetail(eventID, eventRequest.Title, eventRequest.Detail); err != nil {
+	log.Println("request", eventRequest)
+	if err := h.Repo.UpdateEventTitleDetail(eventID, eventRequest.Title, eventRequest.Detail, eventRequest.DueEdit); err != nil {
 		log.Println(err)
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Error editing event title and detail."})
 		return
