@@ -1,3 +1,10 @@
+.bg {
+  background-color: #f1f1f1e6;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .header {
   color: #666;
   font-size: 22px;
@@ -20,9 +27,8 @@
 }
 .history-card {
   display: flex;
-  justify-content: center;
-  align-items: center;
   margin-top: 20px;
+  margin-bottom: 30px;
 }
 .history-item {
   width: 475px;

@@ -53,7 +53,7 @@ export default function ViewEvent() {
     setHistoryEvent((historyEvent) => {
       if (historyEvent.includes(input)) return historyEvent;
       else if (historyEvent.length >= 5)
-        return [input, ...historyEvent.slice(1)];
+        return [input, ...historyEvent.slice(0, -1)];
       else return [input, ...historyEvent];
     });
     if (isExisted) {

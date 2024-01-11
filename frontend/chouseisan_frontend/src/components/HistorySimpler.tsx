@@ -6,17 +6,26 @@ import React, {
   useContext,
 } from "react";
 
-import { List, ListItem, ListItemText, Button, Grid } from "@mui/material";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  Grid,
+  Link,
+  ListItemIcon,
+} from "@mui/material";
 import "./HistorySimpler.css";
 import axios from "../utils/axios";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
-
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 export default function HistorySimpler() {
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
   const [title, setTitle] = useState<string[]>([]);
   const [timeslotList, setTimeslotsList] = useState<string[][]>([]);
   useEffect(() => {
     historyEvent.map((value, index) => {
+      console.log(historyEvent);
       axios
         .get(`/event/timeslots/${value}`)
         .then((response) => {
@@ -62,7 +71,7 @@ export default function HistorySimpler() {
   const rows = Math.ceil(timeslotList.length / 3);
   const cols = Math.min(timeslotList.length, 3);
   return (
-    <>
+    <div className="bg">
       <div className="history-simpler-container">
         <div className="header">
           Recently viewed events
@@ -76,7 +85,11 @@ export default function HistorySimpler() {
           return (
             <Button
               className="history-item"
-              sx={{ ...buttonStyle, marginRight: "20px" }}
+              sx={{
+                ...buttonStyle,
+                marginRight: "20px",
+                backgroundColor: "#fff",
+              }}
               variant="outlined"
             >
               <Grid container sx={{ height: "100%" }} spacing={1}>
@@ -94,7 +107,7 @@ export default function HistorySimpler() {
                         border: "1px solid #ccc",
                         borderRadius: "4px",
                         "& .css-10hburv-MuiTypography-root": {
-                          fontSize: "10px", // 调整字体大小
+                          fontSize: "12px", // 调整字体大小
                           color: "black",
                         },
                         maxWidth: "130px",
@@ -120,6 +133,15 @@ export default function HistorySimpler() {
           );
         })}
       </div>
-    </>
+      <Link
+        href="/scheduler"
+        color={"#a46702"}
+        underline="hover"
+        sx={{ marginBottom: "15px" }}
+      >
+        <ArrowForwardIosIcon sx={{ fontSize: 11 }} />
+        View complete history
+      </Link>
+    </div>
   );
 }
