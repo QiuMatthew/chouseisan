@@ -23,7 +23,7 @@ export default function InputForm() {
     dayjs(japanTime).add(7, "day").toString()
   );
   const navigate = useNavigate();
-
+  // localStorage.clear();
   const eventSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios

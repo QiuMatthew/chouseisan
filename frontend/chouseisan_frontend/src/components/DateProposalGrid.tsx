@@ -64,6 +64,7 @@ export default function DateProposalGrid(props: any) {
     axios
       .get(`/attendance/${props.uuid}`)
       .then((response) => {
+        console.log(response.data);
         setExpiration(response.data.due_edit);
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
@@ -124,11 +125,11 @@ export default function DateProposalGrid(props: any) {
       let [yesNum, unknownNum, noNum] = [0, 0, 0];
       eventObject.participants.forEach((obj) => {
         if (obj.result[index] === 1) {
-          yesNum += 1;
+          noNum += 1;
         } else if (obj.result[index] === 2) {
           unknownNum += 1;
         } else if (obj.result[index] === 3) {
-          noNum += 1;
+          yesNum += 1;
         }
       });
       rows.push({
@@ -190,11 +191,11 @@ export default function DateProposalGrid(props: any) {
       },
     ];
     const getObejctPosition = (n: number) => {
-      if (n === 1) {
+      if (n === 3) {
         return "0";
       } else if (n === 2) {
         return "52%";
-      } else if (n === 3) {
+      } else if (n === 1) {
         return "102%";
       }
     };
@@ -399,14 +400,14 @@ export default function DateProposalGrid(props: any) {
                       aria-label="circular buttons"
                       sx={{ position: "absolute", right: 0 }}
                     >
-                      <ToggleButton value={1} className="toggle-button">
+                      <ToggleButton value={3} className="toggle-button">
                         <CheckIcon />
                       </ToggleButton>
                       <ToggleButton value={2} className="toggle-button">
                         <QuestionMarkIcon />
                       </ToggleButton>
                       <ToggleButton
-                        value={3}
+                        value={1}
                         className="toggle-button"
                         sx={{
                           marginRight: "20px",

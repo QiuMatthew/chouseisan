@@ -11,7 +11,6 @@ import { HistoryEventContext } from "../contexts/HistoryEvent";
 export default function ViewEvent() {
   const { selfEventList, setSelfEventList } = useContext(SelfEventContext);
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
-
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [no, setNo] = useState(0);
@@ -41,13 +40,13 @@ export default function ViewEvent() {
       });
   });
   React.useEffect(() => {
-    setHistoryEvent((historyEvent) => {
-      if (historyEvent.includes(input)) return historyEvent;
-      else if (historyEvent.length >= 5)
-        return [input, ...historyEvent.slice(0, -1)];
-      else return [input, ...historyEvent];
-    });
     if (isExisted) {
+      setHistoryEvent((historyEvent) => {
+        if (historyEvent.includes(input)) return historyEvent;
+        else if (historyEvent.length >= 5)
+          return [input, ...historyEvent.slice(0, -1)];
+        else return [input, ...historyEvent];
+      });
       axios
         .get(`/event/basic/${input}`)
         .then((response) => {

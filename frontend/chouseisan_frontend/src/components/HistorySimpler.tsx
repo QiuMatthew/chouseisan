@@ -38,7 +38,7 @@ export default function HistorySimpler() {
           console.log("ERROR connecting backend service");
         });
     });
-  }, []);
+  });
   const buttonStyle = {
     width: "465px",
     height: "180px",
