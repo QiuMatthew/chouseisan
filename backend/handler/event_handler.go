@@ -205,7 +205,7 @@ func (h *EventHandler) GetTimeslotsHandler(c *gin.Context) {
 	// add event title to timeslotsDict
 	// timeslotsDict["title"] = event.Title
 
-	c.IndentedJSON(http.StatusOK, gin.H{"title": event.Title, "timeslots": timeslotsDict})
+	c.IndentedJSON(http.StatusOK, gin.H{"title": event.Title, "detail": event.Detail, "timeslots": timeslotsDict})
 }
 
 func (h *EventHandler) DeleteTimeslotsHandler(c *gin.Context) {
