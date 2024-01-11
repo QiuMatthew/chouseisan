@@ -47,6 +47,7 @@ export default function ViewEvent() {
           return [input, ...historyEvent.slice(0, -1)];
         else return [input, ...historyEvent];
       });
+      console.log(historyEvent);
       axios
         .get(`/event/basic/${input}`)
         .then((response) => {

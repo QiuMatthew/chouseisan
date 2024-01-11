@@ -12,13 +12,17 @@ export default function HistorySimpler() {
   const [timeslotList, setTimeslotsList] = useState<string[][]>([]);
   const navigate = useNavigate();
   useEffect(() => {
-    historyEvent.forEach((value) => {
+    historyEvent.slice(0, 2).forEach((value) => {
       axios
         .get(`/event/timeslots/${value}`)
         .then((response) => {
           setTitle((title) => {
             if (title.includes(response.data.title)) return title;
-            else return [...title, response.data.title];
+            else {
+              console.log(response.data.title);
+              console.log(title.includes(String(response.data.title)));
+              return [...title, response.data.title];
+            }
           });
           setTimeslotsList((timeslotList) => {
             if (
@@ -38,7 +42,11 @@ export default function HistorySimpler() {
           console.log("ERROR connecting backend service");
         });
     });
-  });
+    console.log(title);
+  }, []);
+  useEffect(() => {
+    console.log("executed");
+  }, []);
   const buttonStyle = {
     width: "465px",
     height: "180px",
@@ -65,6 +73,7 @@ export default function HistorySimpler() {
         {title.slice(0, 2).map((value, index) => {
           return (
             <Button
+              key={3 * index}
               className="history-item"
               sx={{
                 ...buttonStyle,
@@ -87,6 +96,7 @@ export default function HistorySimpler() {
                 {timeslotList[index].slice(0, 6).map((timeslot, index) => (
                   <Grid item xs={4} key={index}>
                     <ListItem
+                      key={2 * index}
                       sx={{
                         border: "1px solid #ccc",
                         borderRadius: "4px",
