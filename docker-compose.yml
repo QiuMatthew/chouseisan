@@ -22,6 +22,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: chouseisan
+      CHOUSEISAN_EMAIL_PASSWORD: ${CHOUSEISAN_EMAIL_PASSWORD}
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "mysql", "-uuser", "-ppassword"]
       interval: 5s

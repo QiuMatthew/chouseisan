@@ -4,11 +4,13 @@ import (
 	"chouseisan/handler"
 	"chouseisan/repository"
 	"chouseisan/schedule"
+	"log"
 
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 )
 
 func main() {
@@ -51,5 +53,14 @@ func main() {
 	// events.SetupEventsRoutes(router)
 
 	handler.SetupEventRoutes(router, event_handler)
+
+	c := cron.New()
+	_, err := c.AddFunc("@every 1m", event_handler.CheckDueDatesAndSendEmails)
+	if err != nil {
+		log.Fatal("Error setting up the scheduler:", err)
+	}
+	c.Start()
+	defer c.Stop()
+
 	router.Run("0.0.0.0:8080")
 }

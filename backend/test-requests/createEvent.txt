@@ -45,7 +45,7 @@ curl --verbose -X GET -b "daf4a17a-1b69-445b-910d-488c3ddb70f9=40060f3b-be6d-430
 # add attendance for an event
 curl --verbose -X POST 
 
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best", "email": "a@yakiniku.com"}' http://localhost:8080/attendance/8fe49b30-70b5-4c8e-8a0e-6a35da55dd8f
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"4": 1, "5": 2,"6": 1},"name": "John","comment": "tomorrow is best", "email": "s.yuki.regista@gmail.com"}' http://localhost:8080/attendance/2495774d-69fb-4ddd-b410-09f3fdb90e37
 
 curl --verbose -X GET  http://localhost:8080/attendance/8fe49b30-70b5-4c8e-8a0e-6a35da55dd8f
 
@@ -65,4 +65,4 @@ curl --verbose -X GET http://localhost:8080/event/basic/10626d98-009d-49b5-a1e7-
 
 
 # edit due dateTimeProposal
-curl --verbose -X PUT -H "Content-Type: application/json" -b "2495774d-69fb-4ddd-b410-09f3fdb90e37=5c17a2e1-e139-4a40-85cb-73381ec43ae2" -d '{"due_edit": "1/1"}' http://localhost:8080/event/editDue/2495774d-69fb-4ddd-b410-09f3fdb90e37
+curl --verbose -X PUT -H "Content-Type: application/json" -b "2495774d-69fb-4ddd-b410-09f3fdb90e37=5c17a2e1-e139-4a40-85cb-73381ec43ae2" -d '{"due_edit": "Thu, 11 Jan 2024 15:07:00 GMT"}' http://localhost:8080/event/editDue/2495774d-69fb-4ddd-b410-09f3fdb90e37
