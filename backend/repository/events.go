@@ -5,6 +5,7 @@ package repository
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -84,4 +85,16 @@ func (repo Repository) UpdateEventDue(eventID string, due string) error {
 		return err
 	}
 	return nil
+}
+
+func (repo Repository) GetAllEventsDueNow() ([]Event, error) {
+	currentTime := time.Now()
+	utcTime := currentTime.UTC().Format("2006-01-02 15:04")
+	var events []Event
+	err := repo.db.Where("DATE_FORMAT(STR_TO_DATE(due_edit, '%a, %d %b %Y %H:%i:%s GMT'), '%Y-%m-%d %H:%i') = ?", utcTime).Find(&events).Error
+	if err != nil {
+		log.Println("Gorm Error:", err)
+		return events, err
+	}
+	return events, nil
 }
