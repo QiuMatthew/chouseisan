@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
@@ -24,6 +24,7 @@ import axios from "../utils/axios";
 import { event, addAttendence, nameId } from "../types/Event";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import dayjs from "dayjs";
+import { HistoryEventContext } from "../contexts/HistoryEvent";
 
 interface rowData {
   id: number;
@@ -45,6 +46,7 @@ export default function DateProposalGrid(props: any) {
   const navigate = useNavigate();
   const params = useParams();
   const [expiration, setExpiration] = useState("");
+  const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
   let formMethods = useForm<addAttendence>({
     mode: "onChange",
     defaultValues: { result: [] },
@@ -69,6 +71,8 @@ export default function DateProposalGrid(props: any) {
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
         setSchedule(Array(response.data.scheduleList.length).fill(undefined));
+
+        
       })
       .catch((reason) => {
         console.log(reason);

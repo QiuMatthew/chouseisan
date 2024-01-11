@@ -9,39 +9,9 @@ import { HistoryEventContext } from "../contexts/HistoryEvent";
 import "./History.css";
 export default function History() {
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
-  const [title, setTitle] = useState<string[]>([]);
-  const [timeslotList, setTimeslotsList] = useState<string[][]>([]);
   const navigate = useNavigate();
   console.log(historyEvent);
-  useEffect(() => {
-    historyEvent.forEach((value, index) => {
-      axios
-        .get(`/event/timeslots/${value}`)
-        .then((response) => {
-          console.log(response.data);
-          setTitle((title) => {
-            if (title.includes(response.data.title)) return title;
-            else return [...title, response.data.title];
-          });
-          setTimeslotsList((timeslotList) => {
-            if (
-              timeslotList.some(
-                (value) =>
-                  JSON.stringify(value) ===
-                  JSON.stringify(Object.values(response.data.timeslots))
-              )
-            )
-              return timeslotList;
-            else
-              return [...timeslotList, Object.values(response.data.timeslots)];
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log("ERROR connecting backend service");
-        });
-    });
-  }, []);
+
   const buttonStyle = {
     width: "700px",
     height: "180px",
@@ -90,7 +60,7 @@ export default function History() {
           >
             Upto 5 most recent events are displayed here.
           </Button>
-          {title.slice(0, 5).map((value, index) => {
+          {historyEvent.slice(0, 5).map((value, index) => {
             // console.log(timeslotList);
             // console.log(title);
             return (
@@ -104,9 +74,9 @@ export default function History() {
                 variant="outlined"
                 onClick={() => {
                   console.log("clicked");
-                  navigate(
-                    `../view_event/${historyEvent[index].replace(/-/g, "")}`
-                  );
+                  // navigate(
+                  //   `../view_event/${historyEvent[index].replace(/-/g, "")}`
+                  // );
                 }}
               >
                 <Grid container sx={{ height: "100%" }} spacing={1}>
@@ -119,9 +89,9 @@ export default function History() {
                       fontSize: "18px",
                     }}
                   >
-                    {value}
+                    {value["title"]}
                   </Grid>
-                  {timeslotList[index].slice(0, 6).map((timeslot, index) => (
+                  {value["scheduleList"].slice(0, 6).map((timeslot, index) => (
                     <Grid item xs={4} key={index}>
                       <ListItem
                         sx={{

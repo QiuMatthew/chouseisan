@@ -6,47 +6,12 @@ import axios from "../utils/axios";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import { historyEvent } from "../types/Event";
 export default function HistorySimpler() {
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
-  const [title, setTitle] = useState<string[]>([]);
-  const [timeslotList, setTimeslotsList] = useState<string[][]>([]);
+  const arr = ["1", "2"];
   const navigate = useNavigate();
-  useEffect(() => {
-    historyEvent.slice(0, 2).forEach((value) => {
-      axios
-        .get(`/event/timeslots/${value}`)
-        .then((response) => {
-          setTitle((title) => {
-            if (title.includes(response.data.title)) return title;
-            else {
-              console.log(response.data.title);
-              console.log(title.includes(String(response.data.title)));
-              return [...title, response.data.title];
-            }
-          });
-          setTimeslotsList((timeslotList) => {
-            if (
-              timeslotList.some(
-                (value) =>
-                  JSON.stringify(value) ===
-                  JSON.stringify(Object.values(response.data.timeslots))
-              )
-            )
-              return timeslotList;
-            else
-              return [...timeslotList, Object.values(response.data.timeslots)];
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log("ERROR connecting backend service");
-        });
-    });
-    console.log(title);
-  }, []);
-  useEffect(() => {
-    console.log("executed");
-  }, []);
+
   const buttonStyle = {
     width: "465px",
     height: "180px",
@@ -69,11 +34,11 @@ export default function HistorySimpler() {
           <p className="paragraph">Other users won't be able to see this</p>
         </div>
       </div>
+
       <div className="history-card">
-        {title.slice(0, 2).map((value, index) => {
+        {historyEvent.slice(0, 2).map((value, index) => {
           return (
             <Button
-              key={3 * index}
               className="history-item"
               sx={{
                 ...buttonStyle,
@@ -82,7 +47,7 @@ export default function HistorySimpler() {
               }}
               variant="outlined"
               onClick={() => {
-                navigate(`view_event/${historyEvent[index].replace(/-/g, "")}`);
+                navigate(`view_event/${value["uuid"].replace(/-/g, "")}`);
               }}
             >
               <Grid container sx={{ height: "100%" }} spacing={1}>
@@ -91,12 +56,12 @@ export default function HistorySimpler() {
                   xs={12}
                   sx={{ fontWeight: "bold", color: "black", fontSize: "18px" }}
                 >
-                  {value}
+                  {value["title"]}
                 </Grid>
-                {timeslotList[index].slice(0, 6).map((timeslot, index) => (
-                  <Grid item xs={4} key={index}>
+                {value["scheduleList"].slice(0, 6).map((timeslot, idx) => (
+                  <Grid item xs={4} key={idx}>
                     <ListItem
-                      key={2 * index}
+                      key={2 * idx}
                       sx={{
                         border: "1px solid #ccc",
                         borderRadius: "4px",

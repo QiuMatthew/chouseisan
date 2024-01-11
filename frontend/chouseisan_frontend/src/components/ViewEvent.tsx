@@ -16,6 +16,7 @@ export default function ViewEvent() {
   const [no, setNo] = useState(0);
   const params = useParams();
   const [isExisted, setIsExisted] = useState(false);
+  
   const input =
     params.eventId?.slice(0, 8) +
     "-" +
@@ -41,13 +42,42 @@ export default function ViewEvent() {
   });
   React.useEffect(() => {
     if (isExisted) {
-      setHistoryEvent((historyEvent) => {
-        if (historyEvent.includes(input)) return historyEvent;
-        else if (historyEvent.length >= 5)
-          return [input, ...historyEvent.slice(0, -1)];
-        else return [input, ...historyEvent];
-      });
-      console.log(historyEvent);
+      // setHistoryEvent((historyEvent) => {
+      //   if (historyEvent.includes(input)) return historyEvent;
+      //   else if (historyEvent.length >= 5)
+      //     return [input, ...historyEvent.slice(0, -1)];
+      //   else return [input, ...historyEvent];
+      // });
+      axios
+        .get(`/event/timeslots/${input}`)
+        .then((response) => {
+          const obj = {
+            ["scheduleList"]: Object.values(
+              response.data.timeslots
+            ) as string[],
+            ["title"]: response.data.title as string,
+            ["uuid"]: input,
+          };
+          const flag = Object.values(historyEvent).some(
+            (value) => value.uuid === input
+          );
+
+          setHistoryEvent((historyEvent) => {
+            if (flag) return historyEvent;
+            else if (historyEvent.length >= 5)
+              return [obj, ...historyEvent.slice(0, -1)];
+            else return [obj, ...historyEvent];
+
+            // if (historyEvent.includes(input)) return historyEvent;
+            // else if (historyEvent.length >= 5)
+            //   return [input, ...historyEvent.slice(0, -1)];
+            // else return [input, ...historyEvent];
+          });
+        })
+        .catch((reason) => {
+          console.log(reason);
+          console.log("ERROR connecting backend service");
+        });
       axios
         .get(`/event/basic/${input}`)
         .then((response) => {

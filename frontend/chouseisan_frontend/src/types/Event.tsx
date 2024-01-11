@@ -23,3 +23,8 @@ export type addAttendence = {
   comment: string;
   result: number[];
 };
+export type historyEvent = {
+  title: string
+  scheduleList: string[]
+  uuid: string
+}

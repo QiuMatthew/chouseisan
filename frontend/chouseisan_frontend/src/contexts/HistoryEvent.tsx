@@ -1,16 +1,17 @@
 import React, { createContext, useState, useEffect } from "react";
+import { historyEvent } from "../types/Event";
 export const HistoryEventContext = createContext(
   {} as {
-    historyEvent: string[];
-    setHistoryEvent: React.Dispatch<React.SetStateAction<string[]>>;
+    historyEvent: historyEvent[];
+    setHistoryEvent: React.Dispatch<React.SetStateAction<historyEvent[]>>;
   }
 );
 const HistoryEventProvider = ({ children }: { children: any }) => {
-  const initialState = JSON.parse(
-    localStorage.getItem("historyState") || "[]"
-  ) as string[];
-
-  const [historyEvent, setHistoryEvent] = useState<string[]>(initialState);
+  let str = localStorage.getItem("historyState");
+  if (!str) str = "[]";
+  const initialState = JSON.parse(str);
+  const [historyEvent, setHistoryEvent] =
+    useState<historyEvent[]>(initialState);
   useEffect(() => {
     localStorage.setItem("historyState", JSON.stringify(historyEvent));
   }, [historyEvent]);
