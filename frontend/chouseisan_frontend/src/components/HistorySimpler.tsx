@@ -19,16 +19,18 @@ import "./HistorySimpler.css";
 import axios from "../utils/axios";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { Navigate, useNavigate } from "react-router-dom";
 export default function HistorySimpler() {
   const { historyEvent, setHistoryEvent } = useContext(HistoryEventContext);
   const [title, setTitle] = useState<string[]>([]);
   const [timeslotList, setTimeslotsList] = useState<string[][]>([]);
+  const navigate = useNavigate();
   useEffect(() => {
     historyEvent.map((value, index) => {
-      console.log(historyEvent);
       axios
         .get(`/event/timeslots/${value}`)
         .then((response) => {
+          console.log(response.data);
           setTitle((title) => {
             if (title.includes(response.data.title)) return title;
             else return [...title, response.data.title];
@@ -66,10 +68,10 @@ export default function HistorySimpler() {
     justifyContent: "center",
   };
   const dates: number[] = [1, 2, 3, 4, 5, 6];
-
   // 计算行数和列数
   const rows = Math.ceil(timeslotList.length / 3);
   const cols = Math.min(timeslotList.length, 3);
+  // localStorage.clear();
   return (
     <div className="bg">
       <div className="history-simpler-container">
@@ -80,8 +82,8 @@ export default function HistorySimpler() {
       </div>
       <div className="history-card">
         {title.slice(0, 2).map((value, index) => {
-          console.log(timeslotList);
-          console.log(title);
+          // console.log(timeslotList);
+          // console.log(title);
           return (
             <Button
               className="history-item"
@@ -91,6 +93,10 @@ export default function HistorySimpler() {
                 backgroundColor: "#fff",
               }}
               variant="outlined"
+              onClick={() => {
+                console.log("clicked");
+                navigate(`view_event/${historyEvent[index].replace(/-/g, "")}`);
+              }}
             >
               <Grid container sx={{ height: "100%" }} spacing={1}>
                 <Grid
@@ -100,7 +106,7 @@ export default function HistorySimpler() {
                 >
                   {value}
                 </Grid>
-                {timeslotList[index].map((timeslot, index) => (
+                {timeslotList[index].slice(0, 6).map((timeslot, index) => (
                   <Grid item xs={4} key={index}>
                     <ListItem
                       sx={{
@@ -134,7 +140,7 @@ export default function HistorySimpler() {
         })}
       </div>
       <Link
-        href="/scheduler"
+        href="/scheduler/history"
         color={"#a46702"}
         underline="hover"
         sx={{ marginBottom: "15px" }}

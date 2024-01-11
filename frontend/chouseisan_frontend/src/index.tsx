@@ -28,8 +28,7 @@ root.render(
         <HistoryEventProvider>
           <SelfEventListProvider>
             <App />
-            <RouteSetting />
-            <HistorySimpler />
+            
           </SelfEventListProvider>
         </HistoryEventProvider>
       </Box>

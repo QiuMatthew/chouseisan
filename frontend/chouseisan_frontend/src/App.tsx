@@ -13,8 +13,17 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import { useContext } from "react";
+import RouteSetting from "./utils/RouteSetting";
+import HistorySimpler from "./components/HistorySimpler";
 import {
   Alert,
   AppBar,
@@ -29,6 +38,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import logoIcon from "./images/chousei_logo.png";
 export default function App() {
+  const location = window.location.href.split("/").pop();
+  console.log(location);
   return (
     <>
       <Box
@@ -116,6 +127,8 @@ export default function App() {
           <Route path="/" element={<InputForm />} />
         </Routes> */}
       </Box>
+      <RouteSetting />
+      {location != "history" && <HistorySimpler />}
     </>
   );
 }

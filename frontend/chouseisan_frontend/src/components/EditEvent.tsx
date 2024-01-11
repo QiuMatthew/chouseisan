@@ -132,6 +132,7 @@ export default function EditEvent() {
       .then((response) => {
         setDateList(response.data.timeslots);
         setTitle(response.data.title);
+        setDetail(response.data.detail);
         console.log(response.data);
         //title, detail are not completed
       })
@@ -180,13 +181,12 @@ export default function EditEvent() {
     <>
       <p className="firstLink">
         <Link
-          href="/scheduler/view_event"
+          href={"/scheduler/view_event/" + params.eventId}
           color={"#a46702"}
           underline="hover"
           sx={{ marginBottom: "15px" }}
         >
-          {/* need to be title */}
-          {}
+          {title}
         </Link>
         {" > "}Edit/Delete Event
       </p>

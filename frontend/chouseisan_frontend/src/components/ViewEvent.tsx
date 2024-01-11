@@ -40,15 +40,14 @@ export default function ViewEvent() {
       .get(`/event/exist/${input}`)
       .then((response) => {
         if (response.data.message === "Event Found.") setIsExisted(true);
-        console.log(selfEventList);
-        console.log("history" + historyEvent);
+        console.log(response.data.message);
       })
       .catch((error) => {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
   });
-
+  console.log(selfEventList);
   React.useEffect(() => {
     setHistoryEvent((historyEvent) => {
       if (historyEvent.includes(input)) return historyEvent;
