@@ -30,6 +30,7 @@ curl --verbose -X PUT -b "1bb6e4d1-633a-465a-b297-3ac03441ac7d=35f9a2f7-adec-4a6
 
 # adding some timeslots of the event
 curl --verbose -X PUT -b "a53b5460-d7d8-4061-886d-ee25f286f21e=9dd58e9d-16e3-4036-9fce-7e50be68e52b" -H "Content-Type: application/json" -d '{"dateTimeProposal":"today\ntomorrow"}' http://localhost:8080/event/addTimeslots/a53b5460-d7d8-4061-886d-ee25f286f21e
+curl --verbose -X PUT -b "8e54f4a9-789f-4b1a-b310-e05248a73bb5=6b063409-3c56-4ddd-81d6-652fdac6de52" -H "Content-Type: application/json" -d '{"dateTimeProposal":""}' http://localhost:8080/event/addTimeslots/8e54f4a9-789f-4b1a-b310-e05248a73bb5
 
 
 # check if event exists
