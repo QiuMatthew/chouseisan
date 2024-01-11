@@ -4,7 +4,7 @@ RUN apk update && apk upgrade && apk add --no-cache mysql-client
 WORKDIR /app/backend/
 
 # Copy the initialization script
-COPY database-create.sql /app/backend/init.sql
+# COPY database-create.sql /app/backend/init.sql
 
 COPY . .
 RUN go mod download
