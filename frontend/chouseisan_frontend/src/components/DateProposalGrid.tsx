@@ -48,6 +48,7 @@ interface rowData {
   yes: number | string;
   unknown: number | string;
   no: number | string;
+  annotation: number;
 }
 
 export default function (props: any) {
@@ -130,7 +131,7 @@ export default function (props: any) {
           name: data.name,
           availability: getAvailability(data.result, idList),
           comment: data.comment,
-          email: data.email
+          email: data.email,
         })
         .then(function (response) {
           console.log(response);
@@ -166,6 +167,7 @@ export default function (props: any) {
         yes: yesNum,
         unknown: unknownNum,
         no: noNum,
+        annotation: schedule.annotation,
       });
     });
     rows.push({
@@ -174,6 +176,7 @@ export default function (props: any) {
       yes: "",
       unknown: "",
       no: "",
+      annotation: 0,
     });
     return rows;
   };
@@ -310,6 +313,13 @@ export default function (props: any) {
         <DataGrid
           rows={rows}
           columns={columns}
+          getRowId={(row) => row.id}
+          getRowClassName={(params) => {
+            if (params.row.annotation === 1) return "yellow-row";
+            else if (params.row.annotation === 2) return "lightgreen-row";
+            else if (params.row.annotation === 3) return "darkgreen-row";
+            else return "";
+          }}
           rowHeight={60}
           showCellVerticalBorder
           showColumnVerticalBorder

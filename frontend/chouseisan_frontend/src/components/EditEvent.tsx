@@ -167,12 +167,14 @@ export default function EditEvent() {
         detail: detail,
         due_edit: expiration,
       })
-      .then((response) => {})
+      .then((response) => {
+        console.log(expiration);
+      })
       .catch((error) => {
         console.log(error);
         console.log("ERROR connecting backend service");
       });
-    navigate(`/view_event/${params.eventId}`);
+    // navigate(`/view_event/${params.eventId}`);
   };
   const deleteEvent = () => {
     axios
