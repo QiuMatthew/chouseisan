@@ -13,7 +13,7 @@ curl --verbose -X DELETE -b "20e5e035-3f53-400f-8104-9e20844076ea=5a0bfc90-371b-
 
 
 # modifying event title and detail 
-curl --verbose -X PUT -b "{event_id}={host_Token}" -H "Content-Type: application/json" -d '{"title":"modified title", "detail":"modified description"}' http://localhost:8080/event/editTitleDetail/{event_id}
+curl --verbose -X PUT -b "10626d98-009d-49b5-a1e7-577c47592fcf=86ccb443-6ce9-4e8a-9a25-a67ef2fe02d8" -H "Content-Type: application/json" -d '{"title":"modified title", "detail":"modified description", "due_edit": "12/22"}' http://localhost:8080/event/editTitleDetail/10626d98-009d-49b5-a1e7-577c47592fcf
 curl --verbose -X PUT -b "1bb6e4d1-633a-465a-b297-3ac03441ac7d=35f9a2f7-adec-4a6e-9132-ddf51469681b" -H "Content-Type: application/json" -d '{"title":"modified title", "detail":"modified description"}' http://localhost:8080/event/editTitleDetail/1bb6e4d1-633a-465a-b297-3ac03441ac7d
 
 # modifying only event title
@@ -59,9 +59,9 @@ curl --verbose -X PUT -H "Content-Type: application/json" -d '{"availability": {
 
 
 # get event info
-curl --verbose -X GET http://localhost:8080/attendance/e4743fa0-beb2-4cf3-9eb5-8c68e68bd88c
+curl --verbose -X GET http://localhost:8080/attendance/10626d98-009d-49b5-a1e7-577c47592fcf
 
-curl --verbose -X GET http://localhost:8080/event/basic/1a7cbd7e-aead-4252-be05-8a0d3819294a
+curl --verbose -X GET http://localhost:8080/event/basic/10626d98-009d-49b5-a1e7-577c47592fcf
 
 
 # edit due dateTimeProposal
