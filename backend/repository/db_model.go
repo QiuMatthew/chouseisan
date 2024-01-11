@@ -4,6 +4,7 @@ type Event struct {
 	EventID   string `gorm:"primaryKey"`
 	Title     string `json:"title" gorm:"column:title"`
 	Detail    string `json:"detail" gorm:"column:detail"`
+	DueEdit   string `json:"dueDate gorm:column:due_edit:"`
 	HostToken string `gorm:"column:host_token"`
 }
 

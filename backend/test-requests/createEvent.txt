@@ -1,6 +1,6 @@
 # creating event
 eventID=a85b533a-bd85-490c-a785-0d539f58bbac
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"title":"test event", "detail":"test", "dateTimeProposal":"a\nb\nc"}' http://localhost:8080/createEvent
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"title":"test event", "detail":"test", "due_edit":"2024/5/30", "dateTimeProposal":"a\nb\nc"}' http://localhost:8080/createEvent
 -> uuidが帰ってくる．
 
 # deleting an event
@@ -62,3 +62,7 @@ curl --verbose -X PUT -H "Content-Type: application/json" -d '{"availability": {
 curl --verbose -X GET http://localhost:8080/attendance/e4743fa0-beb2-4cf3-9eb5-8c68e68bd88c
 
 curl --verbose -X GET http://localhost:8080/event/basic/1a7cbd7e-aead-4252-be05-8a0d3819294a
+
+
+# edit due dateTimeProposal
+curl --verbose -X PUT -H "Content-Type: application/json" -b "2495774d-69fb-4ddd-b410-09f3fdb90e37=5c17a2e1-e139-4a40-85cb-73381ec43ae2" -d '{"due_edit": "1/1"}' http://localhost:8080/event/editDue/2495774d-69fb-4ddd-b410-09f3fdb90e37

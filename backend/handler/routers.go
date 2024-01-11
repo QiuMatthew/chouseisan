@@ -19,4 +19,5 @@ func SetupEventRoutes(router *gin.Engine, event_handler *EventHandler) {
 	router.POST("attendance/:eventID", event_handler.AddAttendanceHandler)
 	router.GET("attendance/:eventID", event_handler.GetAttendanceHandler)
 	router.PUT("attendance/:eventID", event_handler.ModifyAttendanceHandler)
+	router.PUT("/event/editDue/:eventID", event_handler.EditDueHandler)
 }

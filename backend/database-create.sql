@@ -8,6 +8,7 @@ CREATE TABLE events (
   event_id   VARCHAR(255) PRIMARY KEY,
   title      VARCHAR(128) NOT NULL,
   detail     TEXT,
+  due_edit   TEXT,
   host_token  VARCHAR(255) NOT NULL
 );
 
