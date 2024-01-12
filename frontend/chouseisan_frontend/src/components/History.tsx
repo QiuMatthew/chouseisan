@@ -74,9 +74,7 @@ export default function History() {
                 variant="outlined"
                 onClick={() => {
                   console.log("clicked");
-                  // navigate(
-                  //   `../view_event/${historyEvent[index].replace(/-/g, "")}`
-                  // );
+                  navigate(`../view_event/${value["uuid"].replace(/-/g, "")}`);
                 }}
               >
                 <Grid container sx={{ height: "100%" }} spacing={1}>
