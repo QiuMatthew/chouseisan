@@ -16,7 +16,7 @@ export default function ViewEvent() {
   const [no, setNo] = useState(0);
   const params = useParams();
   const [isExisted, setIsExisted] = useState(false);
-  
+
   const input =
     params.eventId?.slice(0, 8) +
     "-" +

@@ -308,6 +308,9 @@ export default function DateProposalGrid(props: any) {
                 whiteSpace: "normal",
                 wordWrap: "break-word",
               },
+            "& .MuiDataGrid-row:hover & .MuiDataGrid-row:active'": {
+              backgroundColor: "initial", // 使用 'initial' 或其他颜色取消悬浮时的背景色
+            },
           }}
         />
       </div>
@@ -321,6 +324,11 @@ export default function DateProposalGrid(props: any) {
           width: "500px",
         }}
       >
+        <p className="yellow-font">Yellow rows mean maximum number of '✔'</p>
+        <p className="lightgreen-font">
+          lightgreen rows mean minimum number of 'X'
+        </p>
+        <p className="darkgreen-font">darkgreen rows mean optimal option</p>
         {!showAddForm && (
           <Button
             className="btn-add"
