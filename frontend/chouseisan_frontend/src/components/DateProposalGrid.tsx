@@ -225,6 +225,7 @@ export default function DateProposalGrid(props: any) {
                   name: obj.name,
                   result: obj.result,
                   comment: obj.comment,
+                  email:obj.email
                 });
                 setShowAddForm((showAddForm) => true);
 

@@ -3,6 +3,7 @@ export type proposal = {
   comment: string;
   result: number[];
   user_id: number
+  email: string
 };
 export type event = {
   scheduleList: schedule[];
