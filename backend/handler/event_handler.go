@@ -379,8 +379,9 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 		return
 	}
 	// get event info
-	if _, err := h.Repo.GetEventByID(eventID); err != nil {
-		log.Println(err)
+	event, event_err := h.Repo.GetEventByID(eventID)
+	if event_err != nil {
+		log.Println(event_err)
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Event Not Found."})
 		return
 	}
@@ -403,6 +404,12 @@ func (h *EventHandler) AddAttendanceHandler(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error storing preferences"})
 		return
 	}
+
+	email_err := service.SendEmailAdd(req.Name, req.Email, eventID, event.Title, event.DueEdit)
+	if email_err != nil {
+		log.Println("email error")
+	}
+
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Successfully stored preferences"})
 }
 
