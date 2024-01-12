@@ -45,6 +45,7 @@ type Participant struct {
 	Comment string `json:"comment"`
 	UserID  uint   `json:"user_id"`
 	Result  []uint `json:"result"`
+	Email   string `json:"email"`
 }
 
 type EventForm struct {
@@ -470,6 +471,7 @@ func createEventForm(users []repository.EventUser, timeslots []repository.EventT
 			Comment: user.Comment,
 			UserID:  user.ID,
 			Result:  result,
+			Email:   user.Email,
 		}
 	}
 
@@ -510,7 +512,7 @@ func (h *EventHandler) GetAttendanceHandler(c *gin.Context) {
 	// m
 
 	// find optimal ones
-	maxList, minList, optimalList := service.FindOptimals(preferences, len(eventUsers))
+	maxList, minList, optimalList := service.FindOptimals(preferences, len(eventUsers), eventTimeslots)
 
 	eventForm := createEventForm(eventUsers, eventTimeslots, preferences, maxList, minList, optimalList)
 

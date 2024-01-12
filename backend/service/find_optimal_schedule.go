@@ -1,15 +1,22 @@
 package service
 
 import (
+	"chouseisan/repository"
 	"fmt"
 	"log"
 )
 
-func createPreferencesCount(availability map[uint](map[uint](uint))) map[uint](map[uint]uint) {
+func createPreferencesCount(availability map[uint](map[uint](uint)), eventTimeslots []repository.EventTimeslot) map[uint](map[uint]uint) {
 	preferenceCount := make(map[uint](map[uint]uint))
 	slice := []uint{1, 2, 3}
 	for _, value := range slice {
 		preferenceCount[value] = make(map[uint]uint)
+	}
+	//initialization
+	for _, eventTimeslot := range eventTimeslots {
+		preferenceCount[1][eventTimeslot.ID] = 0
+		preferenceCount[1][eventTimeslot.ID] = 1
+		preferenceCount[1][eventTimeslot.ID] = 2
 	}
 	for _, userTimeslots := range availability {
 		for timeslot, pref := range userTimeslots {
@@ -56,8 +63,8 @@ func intersection(arr1, arr2 []uint) []uint {
 	return intersect
 }
 
-func FindOptimals(availability map[uint](map[uint](uint)), n_users int) ([]uint, []uint, []uint) {
-	preferenceCount := createPreferencesCount(availability)
+func FindOptimals(availability map[uint](map[uint](uint)), n_users int, eventTimeslots []repository.EventTimeslot) ([]uint, []uint, []uint) {
+	preferenceCount := createPreferencesCount(availability, eventTimeslots)
 	log.Println(preferenceCount)
 	fmt.Println(preferenceCount)
 	// find schedule with the most 3's

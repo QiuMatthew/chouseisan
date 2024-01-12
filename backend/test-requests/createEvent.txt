@@ -45,7 +45,7 @@ curl --verbose -X GET -b "daf4a17a-1b69-445b-910d-488c3ddb70f9=40060f3b-be6d-430
 # add attendance for an event
 curl --verbose -X POST 
 
-curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best", "email": "s.yuki.regista@gmail.com"}' http://localhost:8080/attendance/36227dc8-4db7-4b31-89b4-5721fb718373
+curl --verbose -X POST -H "Content-Type: application/json" -d '{"availability": {"1": 1, "2": 2,"3": 1},"name": "John","comment": "tomorrow is best", "email": "s.yuki.regista@gmail.com"}' http://localhost:8080/attendance/ed2ec88b-f0ad-4ea4-a911-21ebb15879a2
 
 curl --verbose -X GET  http://localhost:8080/attendance/8fe49b30-70b5-4c8e-8a0e-6a35da55dd8f
 
@@ -59,7 +59,7 @@ curl --verbose -X PUT -H "Content-Type: application/json" -d '{"availability": {
 
 
 # get event info
-curl --verbose -X GET http://localhost:8080/attendance/2495774d-69fb-4ddd-b410-09f3fdb90e37
+curl --verbose -X GET http://localhost:8080/attendance/ed2ec88b-f0ad-4ea4-a911-21ebb15879a2
 
 curl --verbose -X GET http://localhost:8080/event/basic/10626d98-009d-49b5-a1e7-577c47592fcf
 
