@@ -25,6 +25,7 @@ import { event, addAttendence, nameId } from "../types/Event";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { HistoryEventContext } from "../contexts/HistoryEvent";
+import { isValidEmail } from "../utils/Validation";
 
 interface rowData {
   id: number;
@@ -71,8 +72,6 @@ export default function DateProposalGrid(props: any) {
         setRows(generateRows(response.data));
         setColumns(generateColumns(response.data));
         setSchedule(Array(response.data.scheduleList.length).fill(undefined));
-
-        
       })
       .catch((reason) => {
         console.log(reason);
@@ -353,7 +352,9 @@ export default function DateProposalGrid(props: any) {
             <TextField
               size="small"
               fullWidth
-              {...register("name", { required: "this field is required" })}
+              {...register("name", {
+                required: "this field is required",
+              })}
               error={"name" in errors}
               helperText={errors.name?.message}
             />
@@ -361,7 +362,11 @@ export default function DateProposalGrid(props: any) {
             <TextField
               size="small"
               fullWidth
-              {...register("email", { required: "this field is required" })}
+              {...register("email", {
+                required: "this field is required",
+                validate: (value) =>
+                  isValidEmail(value) || "Invalid email address.",
+              })}
               error={"email" in errors}
               helperText={errors.email?.message}
             />
